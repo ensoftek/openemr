@@ -29,32 +29,37 @@ function lab_exchange_match_patient($externalId, $firstName, $middleName, $lastN
     */
     
     // If empty $externalId or externalId no matched
-    if ($firstName != "")
+    if (ereg_replace("[:space:]", "", $firstName) != "")
         $where .= "fname = '".add_escape_custom($firstName)."' " ;
-    
-    if ($lastName != "") {
+        else {echo "skipping first name <br>";}
+
+    if (ereg_replace("[:space:]", "", $lastName) != "") {
         if ($where != "") $where .= "AND ";
         $where .= "lname = '".add_escape_custom($lastName)."' " ;
     }
+
+//    if (ereg_replace("[:space:]", "", $middleName) != ""){
+//        if ($where != "") $where .= "AND ";
+//        $where .= "mname = '".add_escape_custom($middleName)."' " ;
+//    }
     
-    if ($middleName != ""){
-        if ($where != "") $where .= "AND ";
-        $where .= "mname = '".add_escape_custom($middleName)."' " ;
-    }
-    
-    if ($dob != ""){
+    if (ereg_replace("[:space:]", "", $dob) != ""){
         if ($where != "") $where .= "AND ";
         $where .= "DOB = DATE_FORMAT('".add_escape_custom($dob)."', '%Y-%m-%d') " ;
     }
-    
-    if ($gender != "") {
+
+    if (ereg_replace("[:space:]", "", $gender) != "") {
         if ($gender =="F") $sex = "Female";
         if ($gender =="M") $sex = "Male";
-        if ($where != "") $where .= "AND ";
-        $where .= "(sex = '".add_escape_custom($sex)."' OR sex = '" . add_escape_custom($gender) ."')" ;
+        
+        if(isset($sex))
+        {
+            if ($where != "") $where .= "AND ";
+            $where .= "(sex = '".add_escape_custom($sex)."' OR sex = '" . add_escape_custom($gender) ."')" ;
+        }
     }
-    
-    if ($ssn != ""){
+
+    if (ereg_replace("[:space:]", "", $ssn) != ""){
         if ($where != "") $where .= "AND ";
         // Change to xxx-xx-xxxx format.
         $ss = substr($ssn,0,3)."-".substr($ssn,3,2)."-".substr($ssn,5);
@@ -75,29 +80,74 @@ function lab_exchange_match_patient($externalId, $firstName, $middleName, $lastN
     }
 }
 
-// Find and match the providers for access to the incoming lab report.
-// return: - provider/user id or - false
-function lab_exchange_match_provider($lastName, $firstName) {
-    $sql = "SELECT id from users WHERE ";
+//// Find and match the providers for access to the incoming lab report.
+//// return: - provider/user id or - false
+//function lab_exchange_match_provider($lastName, $firstName) {
+//    $sql = "SELECT id from users WHERE ";
+//    $where = "";
+//
+//    if (ereg_replace("[:space:]", "", $lastName) != "")
+//        $where .= "lname = '".add_escape_custom($lastName)."' " ;
+//
+//    if (ereg_replace("[:space:]", "", $firstName) != "") {
+//        if ($where != "") $where .= "AND ";
+//        $where .= "fname = '".add_escape_custom($firstName)."' " ;
+//    }
+//
+//    if ($where == "") {
+//        return false;
+//    }
+//    else {
+//        $res = sqlQuery($sql . $where);
+//        if ($res['id']) {
+//            echo "found id: " . $res['id'];
+//            return $res['id'];
+//        }
+//        else {
+//            echo "found no id using " . $lastName .", " . $firstName;
+//            return false;
+//        }
+//    }
+//}
+
+/**
+ * identify the lab ordering provider and return the userid. 
+ * 
+ * parameters are populated from the lab result
+ * 
+ * @param <type> $id
+ * @param <type> $lastName
+ * @param <type> $firstName
+ * @return <type> user.id
+ */
+function lab_exchange_match_provider($id, $lastName, $firstName) {
+    $sql = "SELECT user_id from laboratory_providers WHERE ";
     $where = "";
-    
-    if ($lastName != "")
-        $where .= "lname = '".add_escape_custom($lastName)."' " ;
-    
-    if ($lastName != "") {
+
+    if (ereg_replace("[:space:]", "", $lastName) != "")
+        $where .= "provider_lname = '".add_escape_custom($lastName)."' " ;
+
+    if (ereg_replace("[:space:]", "", $firstName) != "") {
         if ($where != "") $where .= "AND ";
-        $where .= "fname = '".add_escape_custom($firstName)."' " ;
+        $where .= "provider_fname = '".add_escape_custom($firstName)."' " ;
     }
-        
+
+    if (ereg_replace("[:space:]", "", $id) != "") {
+        if ($where != "") $where .= "AND ";
+        $where .= "provider_id = '".add_escape_custom($id)."' " ;
+    }
+
     if ($where == "") {
         return false;
     }
     else {
         $res = sqlQuery($sql . $where);
-        if ($res['id']) {
-            return $res['id'];
+        if ($res['user_id']) {
+            echo "found id: " . $res['user_id'];
+            return $res['user_id'];
         }
         else {
+            echo "found no id using " . $lastName .", " . $firstName .", " . $id;
             return false;
         }
     }

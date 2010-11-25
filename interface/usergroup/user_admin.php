@@ -134,7 +134,45 @@ if ($_GET["mode"] == "update") {
     set_user_aro($_GET['access_group'], $user_data["username"],
       formData('fname','G'), formData('mname','G'), formData('lname','G'));
   }
+        #
+        #  Laboratory
+        #
+        $laboratory_count = sqlStatement("select count(*) as count from laboratories");
+        $lab_count_row = sqlFetchArray($laboratory_count);
 
+        if($lab_count_row['count'] > 0)
+        {
+            for($lab_id=1; $lab_id <= $lab_count_row['count']; $lab_id++)
+            {
+                // verify provider/lab relationship record exists
+                $lab_provider_count = sqlFetchArray(sqlStatement("select count(*) as count from laboratory_providers where laboratory_id = {$lab_id} and user_id = {$_GET["id"]}"));
+                if ($lab_provider_count['count'] == 0)
+                {
+                    sqlStatement("insert into laboratory_providers (user_id, laboratory_id) values ({$_GET["id"]}, {$lab_id})");
+                }
+
+                // update provider_fname
+                if (isset($_GET["lab_{$lab_id}_provider_fname"]))
+                {
+                    $tqvar = formData("lab_{$lab_id}_provider_fname",'G');
+                    sqlStatement("UPDATE laboratory_providers SET provider_fname='$tqvar' where user_id={$_GET["id"]} and laboratory_id = {$lab_id}");
+                }
+
+                // update provider_lname
+                if (isset($_GET["lab_{$lab_id}_provider_lname"]))
+                {
+                    $tqvar = formData("lab_{$lab_id}_provider_lname",'G');
+                    sqlStatement("UPDATE laboratory_providers SET provider_lname='$tqvar' where user_id={$_GET["id"]} and laboratory_id = {$lab_id}");
+                }
+
+                // update provider_id
+                if (isset($_GET["lab_{$lab_id}_provider_id"]))
+                {
+                    $tqvar = formData("lab_{$lab_id}_provider_id",'G');
+                    sqlStatement("UPDATE laboratory_providers SET provider_id='$tqvar' where user_id={$_GET["id"]} and laboratory_id = {$lab_id}");
+                }
+            }
+        }
   $ws = new WSProvider($_GET['id']);
 
   /*Dont move usergroup_admin (1).php just close window
@@ -150,10 +188,26 @@ parent.$.fn.fancybox.close();
 
 	';
 }
+$laboratories = sqlStatement("select * from laboratories");
+$lab_data = array();
 
-$res = sqlStatement("select * from users where id={$_GET["id"]}");
+$res = sqlStatement("select * from users left join laboratory_providers on users.id = laboratory_providers.user_id where users.id={$_GET["id"]}");
 for ($iter = 0;$row = sqlFetchArray($res);$iter++)
-                $result[$iter] = $row;
+{
+    foreach($row as $key => $value)
+    {
+        //echo "{$key} => {$value}<br>";
+        
+        # check for laboratory_providers data
+        if($key == "laboratory_id")
+        {
+            $lab_data[$value] = array("provider_fname" => $row['provider_fname'],
+                "provider_lname" => $row['provider_lname'],
+                "provider_id" => $row['provider_id']);
+        }
+    }
+    $result[$iter] = $row;
+}
 $iter = $result[0];
 
 ///
@@ -463,8 +517,72 @@ echo generate_select_list('irnpool', 'irnpool', $iter['irnpool'],
   <td><textarea style="width:150px;" name="comments" wrap=auto rows=4 cols=25><?php echo $iter["info"];?></textarea></td>
 
   </tr>
+  <tr>
+      <td colspan="4">
+          <br><hr>
+          <h4><?php xl('Laboratory', 'e');?></h4>
+      </td>
+  </tr>
+  <tr>
+      <td></td>
+      <td valign="top">
+            <?php
+                $found_results = 0;
+                $laboratory_info = "";
+
+                for ($itr = 0;$lab_row = sqlFetchArray($laboratories);$itr++)
+                {
+                    if(!$found_results)
+                    {
+                        $found_results = 1;
+                        echo "<select id=\"lab_select\"><option onClick=\"disableLaboratorySettings();unsetLabInputValues();\">Select Laboratory</option>";
+                    }
+
+                    $laboratory_info[$lab_row['id']] = $lab_row['laboratory_name'];
+
+                    echo "<option id='{$lab_row['id']}' onclick=\"enableLaboratorySettings();assignLabInputValues();\">" . $lab_row['laboratory_name'] . "</option>";
+
+                }
+                if($found_results)
+                {
+                    echo "</select>";
+                }
+                else
+                    echo "No Laboratories Defined";
+            ?>
+      </td>
+      <td colspan="2">
+          <?php if($found_results) { ?>
+
+        <span id='lab_<?php echo $lab_id; ?>'>
+            <table>
+                <tr>
+                    <td colspan="2"><?php xl('Provider Info', 'e');?>:</td>
+                </tr>
+                <tr>
+                    <td>
+                    <?php xl('First Name','e');?>:</td><td><input type="text" onKeyUp="syncLabInputData()" readonly="readonly" id="provider_fname" name="provider_fname" style="width:150px;"  value=""/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <?php xl('Last Name','e');?>:</td><td><input type="text" onKeyUp="syncLabInputData()" readonly="readonly" id="provider_lname" name="provider_lname" style="width:150px;"  value=""/><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    <?php xl('ID','e');?>:</td><td><input type="text" onKeyUp="syncLabInputData()" readonly="readonly" id="provider_id" name="provider_id" style="width:150px;"  value=""/><br>
+                    </td>
+                </tr>
+            </table>
+        </span>
+          <?php } ?>
+      </td>
+  </tr>
+
   <tr height="20" valign="bottom">
   <td colspan="4" class="text">
+      <br>
   <font class="mandatory">*</font> <?php xl('Leave blank to keep password unchanged.','e'); ?>
 <!--
 Display red alert if entered password matched one of last three passwords/Display red alert if user password was expired and the user was inactivated previously
@@ -476,6 +594,19 @@ Display red alert if entered password matched one of last three passwords/Displa
  }
 ?>
 </table>
+
+<?php
+    // make the hidden lab fields
+    foreach($laboratory_info as $lab_id => $lab_name)
+    {
+        ?>
+
+<INPUT TYPE="HIDDEN" name="lab_<?php echo $lab_id;?>_provider_fname" id="lab_<?php echo $lab_id;?>_provider_fname" value="<?php echo $lab_data[$lab_id]['provider_fname']; ?>">
+<INPUT TYPE="HIDDEN" name="lab_<?php echo $lab_id;?>_provider_lname" id="lab_<?php echo $lab_id;?>_provider_lname" value="<?php echo $lab_data[$lab_id]['provider_lname']; ?>">
+<INPUT TYPE="HIDDEN" name="lab_<?php echo $lab_id;?>_provider_id" id="lab_<?php echo $lab_id;?>_provider_id" value="<?php echo $lab_data[$lab_id]['provider_id']; ?>">
+        <?php
+    }
+?>
 
 <INPUT TYPE="HIDDEN" NAME="id" VALUE="<?php echo $_GET["id"]; ?>">
 <INPUT TYPE="HIDDEN" NAME="mode" VALUE="update">

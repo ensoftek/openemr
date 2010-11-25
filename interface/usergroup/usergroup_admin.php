@@ -140,7 +140,44 @@ if ($_GET["privatemode"]=="user_admin") {
 			sqlStatement("update users set pwd_expiration_date='$exp_date' where id=$userid");
 		}
 	}
-}
+        }
+
+        #
+        #  Laboratory 
+        #
+        $laboratory_count = sqlStatement("select count(*) as count from laboratories");
+        $laboratory_info = sqlStatement("select id from laboratories");
+
+        $lab_count_row = sqlFetchArray($laboratory_count);
+
+        while($row = sqlFetchArray($laboratory_info))
+        {
+            $lab_id = $row['id'];
+
+                // verify provider/lab relationship record exists
+            $lab_provider_count = sqlFetchArray(sqlStatement("select count(*) as count from laboratory_providers where laboratory_id = {$lab_id} and user_id = {$_GET["id"]}"));
+            if ($lab_provider_count['count'] == 0) {
+                sqlStatement("insert into laboratory_providers (user_id, laboratory_id) values ({$_GET["id"]}, {$lab_id})");
+            }
+
+            // update provider_fname
+            if (isset($_GET["lab_{$lab_id}_provider_fname"])) {
+                $tqvar = formData("lab_{$lab_id}_provider_fname", 'G');
+                sqlStatement("UPDATE laboratory_providers SET provider_fname='$tqvar' where user_id={$_GET["id"]} and laboratory_id = {$lab_id}");
+            }
+
+            // update provider_lname
+            if (isset($_GET["lab_{$lab_id}_provider_lname"])) {
+                $tqvar = formData("lab_{$lab_id}_provider_lname", 'G');
+                sqlStatement("UPDATE laboratory_providers SET provider_lname='$tqvar' where user_id={$_GET["id"]} and laboratory_id = {$lab_id}");
+            }
+
+            // update provider_id
+            if (isset($_GET["lab_{$lab_id}_provider_id"])) {
+                $tqvar = formData("lab_{$lab_id}_provider_id", 'G');
+                sqlStatement("UPDATE laboratory_providers SET provider_id='$tqvar' where user_id={$_GET["id"]} and laboratory_id = {$lab_id}");
+            }
+        }
 
       // for relay health single sign-on
       if ($_GET["ssi_relayhealth"]) {

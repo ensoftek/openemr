@@ -5,6 +5,7 @@ require_once($GLOBALS['fileroot'] ."/library/classes/Pharmacy.class.php");
 require_once($GLOBALS['fileroot'] ."/library/classes/InsuranceCompany.class.php");
 require_once($GLOBALS['fileroot'] ."/library/classes/Provider.class.php");
 require_once($GLOBALS['fileroot'] ."/library/classes/InsuranceNumbers.class.php");
+require_once($GLOBALS['fileroot'] ."/library/classes/Laboratory.class.php");
 
 class C_PracticeSettings extends Controller {
 
@@ -130,6 +131,18 @@ class C_PracticeSettings extends Controller {
 		$this->default_action($display);
 	}
 
+        function laboratory_action($arg) {
+		$c = new Controller();
+
+                $fga = func_get_args();
+
+		$fga = array_slice($fga,1);
+		$args = array_merge(array("laboratory" => "",$arg => ""),$fga);
+
+		$display =  $c->act($args);
+		$this->assign("ACTION_NAME", xl("Laboratories") );
+		$this->default_action($display);
+	}
 
 	function hl7_action($arg) {
 		$c = new Controller();
