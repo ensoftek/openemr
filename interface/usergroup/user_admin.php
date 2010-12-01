@@ -535,7 +535,9 @@ echo generate_select_list('irnpool', 'irnpool', $iter['irnpool'],
                     if(!$found_results)
                     {
                         $found_results = 1;
-                        echo "<select id=\"lab_select\"><option onClick=\"disableLaboratorySettings();unsetLabInputValues();\">Select Laboratory</option>";
+                        echo "<select id=\"lab_select\"><option onClick=\"disableLaboratorySettings();unsetLabInputValues();\">";
+                        xl('Select Laboratory', 'e');
+                        echo "</option>";
                     }
 
                     $laboratory_info[$lab_row['id']] = $lab_row['laboratory_name'];
@@ -548,7 +550,7 @@ echo generate_select_list('irnpool', 'irnpool', $iter['irnpool'],
                     echo "</select>";
                 }
                 else
-                    echo "No Laboratories Defined";
+                    xl('No Laboratories Defined', 'e');
             ?>
       </td>
       <td colspan="2">

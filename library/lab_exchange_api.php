@@ -24,8 +24,6 @@
 		}
 		
 		public function sendRequest($path, $method="GET", $vars=array()){
-		
-			echo "Path: {$path}\n";
 
 			$encoded = "";
             foreach($vars AS $key=>$value)
@@ -36,8 +34,6 @@
             
             // Construct full url.
             $url = "{$this->Endpoint}/$path";
-            
-	    echo "Url: {$url}\n";
 
             // If GET and vars, append them.
             if($method == "GET") 

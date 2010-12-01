@@ -31,7 +31,6 @@ function lab_exchange_match_patient($externalId, $firstName, $middleName, $lastN
     // If empty $externalId or externalId no matched
     if (ereg_replace("[:space:]", "", $firstName) != "")
         $where .= "fname = '".add_escape_custom($firstName)."' " ;
-        else {echo "skipping first name <br>";}
 
     if (ereg_replace("[:space:]", "", $lastName) != "") {
         if ($where != "") $where .= "AND ";
@@ -143,11 +142,11 @@ function lab_exchange_match_provider($id, $lastName, $firstName) {
     else {
         $res = sqlQuery($sql . $where);
         if ($res['user_id']) {
-            echo "found id: " . $res['user_id'];
+//            echo "found id: " . $res['user_id'];
             return $res['user_id'];
         }
         else {
-            echo "found no id using " . $lastName .", " . $firstName .", " . $id;
+//            echo "found no id using " . $lastName .", " . $firstName .", " . $id;
             return false;
         }
     }

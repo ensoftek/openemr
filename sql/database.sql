@@ -1559,7 +1559,7 @@ CREATE TABLE IF NOT EXISTS `laboratories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'record id for entry in the laboratories table',
   `laboratory_name` varchar(255) NOT NULL COMMENT 'name for the record of the laboratories table',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='The Laboratories table keeps a list of known laboratory enti';
+) ENGINE=MyISAM  COMMENT='The Laboratories table keeps a list of known laboratory enti';
 
 --
 -- Dumping data for table `laboratories`
@@ -1582,7 +1582,7 @@ CREATE TABLE IF NOT EXISTS `laboratory_providers` (
   `provider_lname` varchar(255) NOT NULL COMMENT 'provider last name, assigned by laboratory entity',
   `provider_id` varchar(255) NOT NULL COMMENT 'provider id, assigned by laboratory entity',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='this table relates laboratory-assigned providers to local us';
+) ENGINE=MyISAM COMMENT='this table relates laboratory-assigned providers to local us';
 -- --------------------------------------------------------
 
 -- 

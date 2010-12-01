@@ -145,12 +145,9 @@ if ($_GET["privatemode"]=="user_admin") {
         #
         #  Laboratory 
         #
-        $laboratory_count = sqlStatement("select count(*) as count from laboratories");
         $laboratory_info = sqlStatement("select id from laboratories");
-
-        $lab_count_row = sqlFetchArray($laboratory_count);
-
-        while($row = sqlFetchArray($laboratory_info))
+        
+		while($row = sqlFetchArray($laboratory_info))
         {
             $lab_id = $row['id'];
 
