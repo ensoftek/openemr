@@ -904,7 +904,7 @@ function removeOptionSelected(EncounterId)
 <ul id="navigation">
   <?php if (!$GLOBALS['disable_calendar'] && !$GLOBALS['ippf_specific']) genTreeLink('RTop','cal',xl('Calendar')); ?>
   <?php genTreeLink('RBot','msg',xl('Messages')); ?>
-  <?php if (isset($LAB_EXCHANGE_ENDPOINT) && $LAB_EXCHANGE_ENDPOINT != "") genTreeLink('RTop', 'lab', xl('Check Lab Results'));?>
+  <?php if (!empty($GLOBALS['lab_exchange_endpoint'])) genTreeLink('RTop', 'lab', xl('Check Lab Results'));?>
 
   <li class="open"><span><?php xl('Patient/Client','e') ?></span>
     <ul>

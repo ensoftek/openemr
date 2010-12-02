@@ -369,19 +369,6 @@ $GLOBALS['layout_search_color'] = '#ffff55';
 //EMAIL SETTINGS
 $SMTP_Auth = !empty($GLOBALS['SMTP_USER']);
 
-// The following credentials are provided by OpenEMR Support LLC for testing.
-// When you sign up with their Lab Exchange service, they will provide you with your own credentials.
-
-/* use this for testing
-$LAB_EXCHANGE_SITEID   = "3";
-$LAB_EXCHANGE_TOKEN    = "12345";
-$LAB_EXCHANGE_ENDPOINT = "https://openemrsupport.com:29443/len/api";
-*/
-
-$LAB_EXCHANGE_SITEID   = "";
-$LAB_EXCHANGE_TOKEN    = "";
-$LAB_EXCHANGE_ENDPOINT = "";
-
 // If you want Hylafax support then uncomment and customize the following
 // statements, and also customize custom/faxcover.txt:
 //

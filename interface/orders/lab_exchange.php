@@ -16,7 +16,7 @@ $lab_patient_success = array();
 $lab_patient_errors = array();
 
 // Create the REST client
-$client = new LabExchangeClient($LAB_EXCHANGE_SITEID, $LAB_EXCHANGE_TOKEN, $LAB_EXCHANGE_ENDPOINT);
+$client = new LabExchangeClient($GLOBALS['lab_exchange_siteid'],$GLOBALS['lab_exchange_token'],$GLOBALS['lab_exchange_endpoint']);
 
 // Make the request
 $response = $client->sendRequest("results", "GET");
