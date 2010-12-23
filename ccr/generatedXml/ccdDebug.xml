@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:voc="urn:hl7-org:v3/voc" xmlns:sdtc="urn:hl7-org:sdtc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 http://xreg2.nist.gov:8080/hitspValidation/schema/cdar2c32/infrastructure/cda/C32_CDA.xsd" classCode="DOCCLIN" moodCode="EVN">
+  <realmCode code="US"/>
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <templateId root="2.16.840.1.113883.10.20.1"/>
+  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1"/>
+  <templateId root="2.16.840.1.113883.10.20.3"/>
+  <templateId root="2.16.840.1.113883.3.88.11.32.1"/>
+  <id root="cff30c56-c45d-2be4-adb6-94caa0566757"/>
+  <code code="34133-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Summarization of episode note"/>
+  <title>Continuity of Care Document from </title>
+  <effectiveTime value="20101105014558+0000"/>
+  <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+  <languageCode code="en-US"/>
+  <recordTarget typeCode="RCT" contextControlCode="OP">
+    <patientRole>
+      <id extension="2" root="Patient ID"/>
+      <addr use="">
+        <streetAddressLine>1234 Maple Ave</streetAddressLine>
+        <city>Wellville</city>
+        <state>NJ</state>
+        <postalCode>00001</postalCode>
+      </addr>
+      <telecom use="" value="tel:+1-222-222-2222"/>
+      <patient>
+        <name>
+          <given>Jane</given>
+          <family>Doral</family>
+          <suffix/>
+        </name>
+        <administrativeGenderCode displayName="Female" code="" codeSystemName="" codeSystem=""/>
+        <birthTime value="19620802120000"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+  <author>
+    <time value="20101105014558"/>
+    <assignedAuthor>
+      <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+      <addr>
+        <streetAddressLine/>
+      </addr>
+      <telecom/>
+      <assignedPerson>
+        <name/>
+      </assignedPerson>
+    </assignedAuthor>
+  </author>
+  <documentationOf>
+    <serviceEvent classCode="PCPR">
+      <effectiveTime>
+        <low value=""/>
+        <high value="20101105"/>
+      </effectiveTime>
+    </serviceEvent>
+  </documentationOf>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.1.13"/>
+          <code code="48764-5" codeSystem="2.16.840.1.113883.6.1"/>
+          <title>Purpose</title>
+          <text>Summary of patient information</text>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.1.2"/>
+          <templateId root="2.16.840.1.113883.3.88.11.83.102"/>
+          <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.13"/>
+          <code code="48765-2" displayName="Allergies, adverse reactions, alerts" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+          <title>Alerts</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Code</th>
+                  <th>Description</th>
+                  <th>Reaction</th>
+                  <th>Source</th>
+                </tr>
+                <tr>
+                  <td>allergy-penicillin</td>
+                  <td/>
+                  <td>ICD9:V14.0</td>
+                  <td ID="4a154383-85b4-8694-1922-3e8814c39eb4">Personal history of allergy to penicillin</td>
+                  <td>None</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <templateId root="2.16.840.1.113883.3.88.11.83.6"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.1"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.3"/>
+              <id root="4a154383-85b4-8694-1922-3e8814c39eb4" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.18"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.28"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.6"/>
+                  <id root="4a154383-85b4-8694-1922-3e8814c39eb4" extension="CCRObjectID"/>
+                  <code code="416098002" codeSystem="2.16.840.1.113883.6.96" displayName="drug allergy" codeSystemName="SNOMED CT"/>
+                  <text>
+                    <reference value="#4a154383-85b4-8694-1922-3e8814c39eb4"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <value xsi:type="CD"/>
+                  <participant typeCode="CSM"/>
+                  <entryRelationship typeCode="MFST" inversionInd="true">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.54"/>
+                      <code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>None</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText/>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.3.88.11.83.103" assigningAuthorityName="HITSP/C83"/>
+          <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.6" assigningAuthorityName="IHE PCC"/>
+          <templateId root="2.16.840.1.113883.10.20.1.11" assigningAuthorityName="HL7 CCD"/>
+          <code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Problem list"/>
+          <title>Problems</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Code</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                </tr>
+                <tr>
+                  <td>acetaminophen overdose</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 03, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:305.42</td>
+                  <td ID="PROB1">Nondependent sedative, hypnotic or anxiolytic abuse episodic use</td>
+                  <td>5</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>heart attack</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:427.5</td>
+                  <td ID="PROB2">Cardiac arrest</td>
+                  <td>5</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>cardiac arrest</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:427.5</td>
+                  <td ID="PROB3">Cardiac arrest</td>
+                  <td>5</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>Acute MI</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:410.00</td>
+                  <td ID="PROB4">Acute myocardial infarction of anterolateral wall episode of care unspecified</td>
+                  <td>3</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>Acute MI</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:410.00</td>
+                  <td ID="PROB5">Acute myocardial infarction of anterolateral wall episode of care unspecified</td>
+                  <td>3</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>pneumothorax</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:860.1</td>
+                  <td ID="PROB6">Traumatic pneumothorax with open wound into thorax</td>
+                  <td>3</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>pneumothorax</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:860.0</td>
+                  <td ID="PROB7">Traumatic pneumothorax without open wound into thorax</td>
+                  <td>5</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr>
+                  <td>pneumothorax</td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr xmlns="">
+                          <td>Feb 19, 2010</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td>ICD9:860.0</td>
+                  <td ID="PROB8">Traumatic pneumothorax without open wound into thorax</td>
+                  <td>3</td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB1" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB1" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB1"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100203"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Nondependent sedative, hypnotic or anxiolytic abuse episodic use" code="ICD9:305.42" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>5</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB2" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB2" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB2"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Cardiac arrest" code="ICD9:427.5" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>5</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB3" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB3" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB3"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Cardiac arrest" code="ICD9:427.5" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>5</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB4" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB4" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB4"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Acute myocardial infarction of anterolateral wall episode of care unspecified" code="ICD9:410.00" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>3</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB5" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB5" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB5"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Acute myocardial infarction of anterolateral wall episode of care unspecified" code="ICD9:410.00" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>3</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB6" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB6" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB6"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Traumatic pneumothorax with open wound into thorax" code="ICD9:860.1" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>3</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB7" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB7" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB7"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Traumatic pneumothorax without open wound into thorax" code="ICD9:860.0" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>5</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.27"/>
+              <id root="PROB8" extension="CCRObjectID"/>
+              <code nullFlavor="NA"/>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.1.28" assigningAuthorityName="CCD"/>
+                  <id root="PROB8" extension="CCRObjectID"/>
+                  <code code="55607006" displayName="Problem" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+                  <text>
+                    <reference value="#PROB8"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20100219"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value displayName="Traumatic pneumothorax without open wound into thorax" code="ICD9:860.0" codeSystemName="" codeSystem=""/>
+                  <entryRelationship typeCode="REFR">
+                    <observation classCode="OBS" moodCode="EVN">
+                      <templateId root="2.16.840.1.113883.10.20.1.50"/>
+                      <code code="33999-4" codeSystem="2.16.840.1.113883.6.1" displayName="Status"/>
+                      <statusCode code="completed"/>
+                      <value>
+                        <originalText>3</originalText>
+                      </value>
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.1.12"/>
+          <code code="47519-4" codeSystem="2.16.840.1.113883.6.1"/>
+          <title>Procedures</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Code</th>
+                  <th>Description</th>
+                  <th>Location</th>
+                  <th>Substance</th>
+                  <th>Method</th>
+                  <th>Position</th>
+                  <th>Site</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                </tr>
+                <tr id="2813d6e2-c13e-0d44-b933-610d97ef33c2">
+                  <td>body_site</td>
+                  <table>
+                    <tbody>
+                      <tr xmlns="">
+                        <td>Nov 05, 2010</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <td>None</td>
+                  <td/>
+                  <td>body_location)
+                                                            </td>
+                  <td>substance</td>
+                  <td>method</td>
+                  <td>body_position</td>
+                  <td>body_site</td>
+                  <td/>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <procedure classCode="PROC" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.3.88.11.83.17" assigningAuthorityName="HITSP C83"/>
+              <templateId root="2.16.840.1.113883.10.20.1.29" assigningAuthorityName="CCD"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.19" assigningAuthorityName="IHE PCC"/>
+              <id root="2813d6e2-c13e-0d44-b933-610d97ef33c2" extension="CCRObjectID"/>
+              <code displayName="" code="None" codeSystemName="" codeSystem=""/>
+              <text>
+                <reference value="#2813d6e2-c13e-0d44-b933-610d97ef33c2"/>
+              </text>
+              <statusCode code=""/>
+              <effectiveTime>
+                <low value="20101105"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <approachSiteCode>
+                <originalText>method</originalText>
+              </approachSiteCode>
+              <targetSiteCode>
+                <originalText>body_site</originalText>
+              </targetSiteCode>
+              <performer typeCode="PRF">
+                <functionCode>
+                  <originalText>None</originalText>
+                </functionCode>
+                <assignedEntity>
+                  <id extension="" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+            </procedure>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.3.88.11.83.112" assigningAuthorityName="HITSP/C83"/>
+          <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.19" assigningAuthorityName="IHE PCC"/>
+          <templateId root="2.16.840.1.113883.10.20.1.8" assigningAuthorityName="HL7 CCD"/>
+          <code code="10160-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="History of medication use"/>
+          <title>Medications</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Medication</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Form</th>
+                  <th>Strength</th>
+                  <th>Quantity</th>
+                  <th>SIG</th>
+                  <th>Indications</th>
+                  <th>Instruction</th>
+                  <th>Refills</th>
+                  <th>Source</th>
+                </tr>
+                <tr>
+                  <td>Acetadote</td>
+                  <td/>
+                  <td>1</td>
+                  <td/>
+                  <td/>
+                  <td> </td>
+                  <td/>
+                  <td/>
+                  <td/>
+                  <td/>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.24" assigningAuthorityName="CCD"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1" assigningAuthorityName="IHE PCC"/>
+              <id root="631438e8-eb8b-9084-b15e-fc4998db289a" extension="CCRObjectID"/>
+              <statusCode code="completed"/>
+              <effectiveTime xsi:type="IVL_TS">
+                <low value="20100203"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <routeCode displayName="" code="" codeSystemName="2.16.840.1.113883.5.112"/>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root="2.16.840.1.113883.3.88.11.83.8.2" assigningAuthorityName="HITSP C83"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53" assigningAuthorityName="CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2" assigningAuthorityName="IHE PCC"/>
+                  <manufacturedMaterial>
+                    <code>
+                      <originalText>Acetadote</originalText>
+                    </code>
+                    <name/>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.1.6"/>
+          <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"/>
+          <title>Immunizations</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Code</th>
+                  <th>Vaccine</th>
+                  <th>Date</th>
+                  <th>Route</th>
+                  <th>Site</th>
+                  <th>Source</th>
+                </tr>
+                <tr id="ae25a758-3c0a-27b4-519f-8dbe9617f357">
+                  <td/>
+                  <td>DT 1</td>
+                  <td/>
+                  <td/>
+                  <td id="ae25a758-3c0a-27b4-519f-8dbe9617f357:Site"/>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+                <tr id="97ff9b7d-6fd5-4c24-f97c-33cf4f8ed45c">
+                  <td/>
+                  <td>DTaP 1</td>
+                  <td/>
+                  <td/>
+                  <td id="97ff9b7d-6fd5-4c24-f97c-33cf4f8ed45c:Site"/>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.24" assigningAuthorityName="CCD"/>
+              <templateId root="2.16.840.1.113883.3.88.11.83.13" assigningAuthorityName="HITSP C83"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12" assigningAuthorityName="IHE PCC"/>
+              <id root="ae25a758-3c0a-27b4-519f-8dbe9617f357" extension="CCRObjectID"/>
+              <code code="IMMUNIZ" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7 ActCode"/>
+              <text>
+                <reference value="#ae25a758-3c0a-27b4-519f-8dbe9617f357"/>
+              </text>
+              <statusCode code="completed"/>
+              <effectiveTime xsi:type="IVL_TS">
+                <low value="20100523"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <routeCode displayName="" code="" codeSystemName="2.16.840.1.113883.5.112"/>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root="2.16.840.1.113883.3.88.11.83.8.2" assigningAuthorityName="HITSP C83"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53" assigningAuthorityName="CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2" assigningAuthorityName="IHE PCC"/>
+                  <manufacturedMaterial>
+                    <code>
+                      <originalText>DT 1</originalText>
+                    </code>
+                    <name/>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+          <entry typeCode="DRIV">
+            <substanceAdministration classCode="SBADM" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.24" assigningAuthorityName="CCD"/>
+              <templateId root="2.16.840.1.113883.3.88.11.83.13" assigningAuthorityName="HITSP C83"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12" assigningAuthorityName="IHE PCC"/>
+              <id root="97ff9b7d-6fd5-4c24-f97c-33cf4f8ed45c" extension="CCRObjectID"/>
+              <code code="IMMUNIZ" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7 ActCode"/>
+              <text>
+                <reference value="#97ff9b7d-6fd5-4c24-f97c-33cf4f8ed45c"/>
+              </text>
+              <statusCode code="completed"/>
+              <effectiveTime xsi:type="IVL_TS">
+                <low value="20100524"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <routeCode displayName="" code="" codeSystemName="2.16.840.1.113883.5.112"/>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root="2.16.840.1.113883.3.88.11.83.8.2" assigningAuthorityName="HITSP C83"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53" assigningAuthorityName="CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2" assigningAuthorityName="IHE PCC"/>
+                  <manufacturedMaterial>
+                    <code>
+                      <originalText>DTaP 1</originalText>
+                    </code>
+                    <name/>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.1.14"/>
+          <code code="30954-2" codeSystem="2.16.840.1.113883.6.1"/>
+          <title>Results</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Test</th>
+                  <th>Date</th>
+                  <th>Result</th>
+                  <th>Source</th>
+                </tr>
+                <tr id="">
+                  <td/>
+                  <td/>
+                  <td>
+                    <div id="ca688562-ce72-ed44-29b6-9fcde82f977f"> 1.0  <br/></div>
+                    <div id="32c4c9e4-24ba-8884-2120-d9ac1a89debe"> 1.0  <br/></div>
+                  </td>
+                  <td> Garden Health System v1.0 </td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode="DRIV">
+            <organizer classCode="BATTERY" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.1.32"/>
+              <id root="" extension="CCRObjectID"/>
+              <code>
+                <originalText/>
+              </code>
+              <statusCode code="completed"/>
+              <effectiveTime>
+                <low value="20101105"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <performer typeCode="PRF">
+                <assignedEntity>
+                  <id extension="5438263d-79a2-4ab4-1990-8289c00d96d7" root="CCRActorID"/>
+                  <addr>
+                    <streetAddressLine/>
+                  </addr>
+                  <telecom/>
+                </assignedEntity>
+              </performer>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.3.88.11.83.15" assigningAuthorityName="HITSP C83"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.31" assigningAuthorityName="CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.13" assigningAuthorityName="IHE PCC"/>
+                  <id root="ca688562-ce72-ed44-29b6-9fcde82f977f" extension="CCRObjectID"/>
+                  <code displayName="" code="None" codeSystemName="" codeSystem=""/>
+                  <text>
+                    <reference value="#ca688562-ce72-ed44-29b6-9fcde82f977f"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20101105"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value xsi:type="PQ" value="1.0" unit=""/>
+                  <interpretationCode displayName="" code="" codeSystemName="2.16.840.1.113883.5.83"/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.3.88.11.83.15" assigningAuthorityName="HITSP C83"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.31" assigningAuthorityName="CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.13" assigningAuthorityName="IHE PCC"/>
+                  <id root="32c4c9e4-24ba-8884-2120-d9ac1a89debe" extension="CCRObjectID"/>
+                  <code displayName="" code="None" codeSystemName="" codeSystem=""/>
+                  <text>
+                    <reference value="#32c4c9e4-24ba-8884-2120-d9ac1a89debe"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <effectiveTime>
+                    <low value="20101105"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <value xsi:type="PQ" value="1.0" unit=""/>
+                  <referenceRange/>
+                </observation>
+              </component>
+            </organizer>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <title>Additional Information About People &amp; Organizations</title>
+          <text>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Name</th>
+                  <th>Specialty</th>
+                  <th>Relation</th>
+                  <th>Identification Numbers</th>
+                  <th>Phone</th>
+                  <th>Address/ E-mail</th>
+                </tr>
+                <tr>
+                  <td>Jane  Doral   </td>
+                  <td/>
+                  <td/>
+                  <td>Patient ID: 2</td>
+                  <td>: 222-222-2222</td>
+                  <td>1234 Maple Ave<br/>Wellville, NJ00001<br/></td>
+                </tr>
+              </tbody>
+            </table>
+            <table>
+              <tbody>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Version</th>
+                  <th>Identification Numbers</th>
+                  <th>Phone</th>
+                  <th>Address/ E-mail</th>
+                </tr>
+                <tr>
+                  <td> Garden Health System v1.0</td>
+                  <td/>
+                  <td/>
+                  <td/>
+                  <td/>
+                  <td/>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
