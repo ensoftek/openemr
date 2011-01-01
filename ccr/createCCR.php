@@ -41,7 +41,7 @@ function createCCR($action){
 	echo '<!--';
 
 	$result = getHeaderData();
-	while ($row = sqlFetchArray($result)) {
+	//while ($row = sqlFetchArray($result)) {
 
 	   $ccr = new DOMDocument('1.0','UTF-8');
 	   $e_styleSheet = $ccr->createProcessingInstruction('xml-stylesheet', 'type="text/xsl" href="ccr.xsl"');
@@ -180,7 +180,7 @@ function createCCR($action){
 	   if($action == "viewccd"){
 	   	viewCCD($ccr);
 	   }
-	}
+	//}
 
 }
 
