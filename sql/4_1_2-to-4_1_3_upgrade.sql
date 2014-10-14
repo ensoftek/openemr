@@ -2841,3 +2841,28 @@ UPDATE `clinical_rules` SET `amc_2014_flag` = 1 , `amc_code_2014` = '170.314(g)(
 UPDATE `clinical_rules` SET `amc_2014_flag` = 1 , `amc_code_2014` = '170.314(g)(1)/(2)–17' WHERE `id` = 'med_reconc_amc';
 #EndIf
 
+#IfNotRow clinical_rules id image_results_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`, `amc_code_2014` ) VALUES ('image_results_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–20');
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id image_results_amc
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'image_results_amc', 'Image Results', 3000, 0);
+#EndIf
+
+#IfNotRow clinical_rules id family_health_history_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
+	`amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`, `amc_code_2014`) VALUES ('family_health_history_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–21');
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id family_health_history_amc
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history_amc', 'Family Health History', 3100, 0);
+#EndIf
+
+#IfNotRow clinical_rules id electronic_notes_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`, `amc_code_2014` ) VALUES ('electronic_notes_amc', 0, 0, 0, 0, '', '', 1, '', 0, 0, 1, '170.314(g)(1)/(2)–22');
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id electronic_notes_amc
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'electronic_notes_amc', 'Electronic Notes', 3200, 0);
+#EndIf
+
