@@ -79,6 +79,8 @@ abstract class AbstractAmcReport implements RsReportIF
         
         $numeratorObjects = 0;
         $denominatorObjects = 0;
+		$patDenomArr =array();
+		$patNumerArr =array();
         foreach ( $this->_amcPopulation as $patient ) 
         {
             // If begin measurement is empty, then make the begin
@@ -97,6 +99,7 @@ abstract class AbstractAmcReport implements RsReportIF
                 if ( !$denominator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
                     continue;
                 }
+				$patDenomArr[] = $patient->id;
                 $denominatorObjects++;
             }
             else {
@@ -111,6 +114,7 @@ abstract class AbstractAmcReport implements RsReportIF
                     if ( $denominator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
                         $denominatorObjects++;
                         array_push($objects_pass,$object);
+						$patDenomArr[] = $patient->id;
                     }
                 }
             }
@@ -122,6 +126,7 @@ abstract class AbstractAmcReport implements RsReportIF
                     continue;
                 }
                 $numeratorObjects++;
+				$patNumerArr[] = $patient->id;
             }
             else {
                 // Counting objects other than patients
@@ -130,6 +135,7 @@ abstract class AbstractAmcReport implements RsReportIF
                     $patient->object=$object;
                     if ( $numerator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
                         $numeratorObjects++;
+						$patNumerArr[] = $patient->id;
                     }
                 }
             }
@@ -141,8 +147,8 @@ abstract class AbstractAmcReport implements RsReportIF
           $denominatorObjects = $denominatorObjects + $this->_manualLabNumber;
         }
         
-        $percentage = calculate_percentage( $denominatorObjects, 0, $numeratorObjects );
-        $result = new AmcResult( $this->_rowRule, $totalPatients, $denominatorObjects, 0, $numeratorObjects, $percentage );
+		$percentage = calculate_percentage( $denominatorObjects, 0, $numeratorObjects );
+        $result = new AmcResult( $this->_rowRule, $totalPatients, $denominatorObjects, 0, $numeratorObjects, $percentage, array_unique($patNumerArr), array_unique($patDenomArr) );
         $this->_resultsArray[]= $result;
     }
 

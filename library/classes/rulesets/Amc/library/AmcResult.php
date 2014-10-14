@@ -17,8 +17,10 @@ class AmcResult implements RsResultIF
     public $patientsExcluded; // Number of patients that are excluded
     public $patientsIncluded; // Number of patients that pass target
     public $percentage; // Calculated percentage
+	public $passNumerPatients = array();
+	public $passDenomPatients = array();
 
-    public function __construct( $rowRule, $totalPatients, $patientsInPopulation, $patientsExcluded, $patientsIncluded, $percentage )
+    public function __construct( $rowRule, $totalPatients, $patientsInPopulation, $patientsExcluded, $patientsIncluded, $percentage, $passNumerPatients, $passDenomPatients )
     {
         $this->rule = $rowRule;
 //        $this->numeratorLabel = $numeratorLabel;
@@ -28,6 +30,9 @@ class AmcResult implements RsResultIF
         $this->patientsExcluded = $patientsExcluded;
         $this->patientsIncluded = $patientsIncluded;
         $this->percentage = $percentage;
+		$this->passNumerPatients = $passNumerPatients;
+		$this->passDenomPatients = $passDenomPatients;
+		
     }
 
     public function format()
@@ -40,7 +45,9 @@ class AmcResult implements RsResultIF
             'excluded' => $this->patientsExcluded,
             'pass_filter' => $this->patientsInPopulation,
             'pass_target' => $this->patientsIncluded,
-            'percentage' => $this->percentage );
+            'percentage' => $this->percentage,
+			'failed_numer_clients' => array_diff($this->passDenomPatients, $this->passNumerPatients)
+			);
             $rowFormat = array_merge( $rowFormat, $this->rule );
         
         return $rowFormat;

@@ -30,10 +30,15 @@ require_once("../../globals.php");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/formdata.inc.php");
 require_once("$srcdir/options.inc.php");
+require_once "$srcdir/report_database.inc";
 
 $fstart = isset($_REQUEST['fstart']) ? $_REQUEST['fstart'] : 0;
 $popup  = empty($_REQUEST['popup']) ? 0 : 1;
 $message = isset($_GET['message']) ? $_GET['message'] : "";
+$from_page = $_REQUEST['from_page'];
+$report_id = $_REQUEST['report_id'];
+$item_checked = $_REQUEST['item_checked'];
+$print_patients = isset($_REQUEST['print_patients'])? $_REQUEST['print_patients'] : 0;
 ?>
 
 <html>
@@ -72,6 +77,7 @@ form {
 }
 
 .srName { width: 12%; }
+.srGender { width: 5%; }
 .srPhone { width: 11%; }
 .srSS { width: 11%; }
 .srDOB { width: 8%; }
@@ -115,7 +121,8 @@ function submitList(offset) {
  var i = parseInt(f.fstart.value) + offset;
  if (i < 0) i = 0;
  f.fstart.value = i;
- top.restoreSession();
+ if(!(f.popup.value))
+	top.restoreSession();
  f.submit();
 }
 
@@ -141,6 +148,10 @@ echo "<input type='hidden' name='search_service_code' value='" .
 
 if ($popup) {
   echo "<input type='hidden' name='popup' value='1' />\n";
+  echo "<input type='hidden' name='from_page' value='$from_page' />\n";
+  echo "<input type='hidden' name='report_id' value='$report_id' />\n";
+  echo "<input type='hidden' name='item_checked' value='$item_checked' />\n";
+  echo "<input type='hidden' name='print_patients' value='$print_patients' />\n";
 
   // Construct WHERE clause and save search parameters as form fields.
   $sqlBindArray = array();
@@ -184,9 +195,80 @@ if ($popup) {
       ") > 0";
     array_push($sqlBindArray, $search_service_code);
   }
+  
+  //For AMC Report, numerator excluded patient list display checking here
+  if($from_page == "amc_report"){
+	if($report_id != ""){
+		$dispTitle = "";
+		$report_view = collectReportDatabase($report_id);
+		$type_report = $report_view['type'];
+		$type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014") ||
+					    ($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) ? $type_report : "standard";
+		$dataSheet = json_decode($report_view['data'],TRUE);
+		$cntRep = 1;
+		foreach ($dataSheet as $row) {
+			if( $cntRep == $item_checked){
+				if (isset($row['is_main']) || isset($row['is_sub'])) {
+					if (isset($row['is_main'])) {
+						$dispTitle = generate_display_field(array('data_type'=>'1','list_id'=>'clinical_rules'),$row['id']);
+						$tempCqmAmcString = "";
+						if (($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) {
+							if (!empty($row['cqm_pqri_code'])) {
+								$tempCqmAmcString .= " " . htmlspecialchars( xl('PQRI') . ":" . $row['cqm_pqri_code'], ENT_NOQUOTES) . " ";
+							}
+							if (!empty($row['cqm_nqf_code'])) {
+								$tempCqmAmcString .= " " . htmlspecialchars( xl('NQF') . ":" . $row['cqm_nqf_code'], ENT_NOQUOTES) . " ";
+							}
+						}
+						if ($type_report == "amc") {
+							if (!empty($row['amc_code'])) {
+								$tempCqmAmcString .= " " . htmlspecialchars( xl('AMC-2011') . ":" . $row['amc_code'], ENT_NOQUOTES) . " ";
+							}
+							if (!empty($row['amc_code_2014'])) {
+								$tempCqmAmcString .= " " . htmlspecialchars( xl('AMC-2014') . ":" . $row['amc_code_2014'], ENT_NOQUOTES) . " ";
+							}
+						}
+						if ($type_report == "amc_2011") {
+							if (!empty($row['amc_code'])) {
+								$tempCqmAmcString .= " " . htmlspecialchars( xl('AMC-2011') . ":" . $row['amc_code'], ENT_NOQUOTES) . " ";
+							}
+						}
+						if ($type_report == "amc_2014") {
+							if (!empty($row['amc_code_2014'])) {
+								$tempCqmAmcString .= " " . htmlspecialchars( xl('AMC-2014') . ":" . $row['amc_code_2014'], ENT_NOQUOTES) . " ";
+							}
+						}
+
+						if (!empty($tempCqmAmcString)) {
+							$dispTitle .=  "(".$tempCqmAmcString.")";
+						}
+
+						if ( !(empty($row['concatenated_label'])) ) {
+						   $dispTitle .= ", " . htmlspecialchars( xl( $row['concatenated_label'] ), ENT_NOQUOTES) . " ";
+						}
+						
+					}else{
+						$dispTitle = generate_display_field(array('data_type'=>'1','list_id'=>'rule_action_category'),$row['action_category']);
+						$dispTitle .= ": " . generate_display_field(array('data_type'=>'1','list_id'=>'rule_action'),$row['action_item']);
+					}
+				}
+				$noDataPatientArr = $row['failed_numer_clients'];
+				$noDataPatients = implode(",", $noDataPatientArr);
+				if($noDataPatients != ""){
+					$where .= " AND pid IN ($noDataPatients)";
+				}
+			}
+			$cntRep++;
+		}
+	}
+   }
 
   $sql = "SELECT $given FROM patient_data " .
-    "WHERE $where ORDER BY $orderby LIMIT $fstart, $sqllimit";
+  "WHERE $where ";
+  if($print_patients)
+	$sql .= " ORDER BY $orderby";
+  else
+	$sql .= " ORDER BY $orderby LIMIT $fstart, $sqllimit";
   $rez = sqlStatement($sql,$sqlBindArray);
   $result = array();
   while ($row = sqlFetchArray($rez)) $result[] = $row;
@@ -222,43 +304,73 @@ else {
 </form>
 
 <table border='0' cellpadding='5' cellspacing='0' width='100%'>
- <tr>
-  <td class='text'>
-   <a href="./patient_select_help.php" target=_new onclick='top.restoreSession()'>[<?php echo htmlspecialchars( xl('Help'), ENT_NOQUOTES); ?>]&nbsp</a>
-  </td>
-  <td class='text' align='center'>
-<?php if ($message) echo "<font color='red'><b>".htmlspecialchars( $message, ENT_NOQUOTES)."</b></font>\n"; ?>
-  </td>
-  <td class='text' align='right'>
 <?php
-// Show start and end row number, and number of rows, with paging links.
-//
-// $count = $fstart + $GLOBALS['PATIENT_INC_COUNT']; // Why did I do that???
-$count = $GLOBALS['PATIENT_INC_COUNT'];
-$fend = $fstart + $MAXSHOW;
-if ($fend > $count) $fend = $count;
+	if($from_page == "amc_report" && $report_id != ""){
 ?>
-<?php if ($fstart) { ?>
-   <a href="javascript:submitList(-<?php echo $MAXSHOW ?>)">
-    &lt;&lt;
-   </a>
-   &nbsp;&nbsp;
-<?php } ?>
-   <?php echo ($fstart + 1) . htmlspecialchars( " - $fend of $count", ENT_NOQUOTES); ?>
-<?php if ($count > $fend) { ?>
-   &nbsp;&nbsp;
-   <a href="javascript:submitList(<?php echo $MAXSHOW ?>)">
-    &gt;&gt;
-   </a>
-<?php } ?>
-  </td>
- </tr>
+		<tr>
+			<td colspan="3" class="text">
+				<?php
+					echo "<strong>[".xl('AMC Rule Numerator Failed Patients')."]".xl(':')."</strong><br/>".$dispTitle;
+				?>
+			</td>
+		</tr>
+<?php
+	}
+?>
+<?php if(!$print_patients){?>
+		 <tr>
+		  <td class='text'>
+		   <?php 
+			if($from_page == "amc_report"){ ?>
+			<a href="./patient_select.php?popup=1&from_page=<?php echo $from_page?>&report_id=<?php echo $report_id;?>&item_checked=<?php echo $item_checked;?>&print_patients=1" target=_new onclick='top.restoreSession()'>[<?php echo htmlspecialchars( xl('Print'), ENT_NOQUOTES); ?>]&nbsp</a>
+		   <?php }else{?>
+		    <a href="./patient_select_help.php" target=_new onclick='top.restoreSession()'>[<?php echo htmlspecialchars( xl('Help'), ENT_NOQUOTES); ?>]&nbsp</a>
+		   <?php }?>
+		 </td>
+		  <td class='text' align='center'>
+		<?php if ($message) echo "<font color='red'><b>".htmlspecialchars( $message, ENT_NOQUOTES)."</b></font>\n"; ?>
+		  </td>
+		  <td class='text' align='right'>
+		<?php
+		// Show start and end row number, and number of rows, with paging links.
+		//
+		// $count = $fstart + $GLOBALS['PATIENT_INC_COUNT']; // Why did I do that???
+		$count = $GLOBALS['PATIENT_INC_COUNT'];
+		$fend = $fstart + $MAXSHOW;
+		if ($fend > $count) $fend = $count;
+		?>
+		<?php if ($fstart) { ?>
+		   <a href="javascript:submitList(-<?php echo $MAXSHOW ?>)">
+			&lt;&lt;
+		   </a>
+		   &nbsp;&nbsp;
+		<?php } ?>
+		   <?php echo ($fstart + 1) . htmlspecialchars( " - $fend of $count", ENT_NOQUOTES); ?>
+		<?php if ($count > $fend) { ?>
+		   &nbsp;&nbsp;
+		   <a href="javascript:submitList(<?php echo $MAXSHOW ?>)">
+			&gt;&gt;
+		   </a>
+		<?php } ?>
+		  </td>
+		 </tr>
+ <?php 
+	}else{
+		$count = $GLOBALS['PATIENT_INC_COUNT'];
+ ?>
+	 <tr>
+		<td class='text' align='right'>
+			<strong><?php echo xl('Total Patient(s)').xl(':');?></strong>&nbsp;<?php echo $count;?>
+		</td>
+	 </tr>
+ <?php }?>
 </table>
 
 <div id="searchResultsHeader">
 <table>
 <tr>
 <th class="srName"><?php echo htmlspecialchars( xl('Name'), ENT_NOQUOTES);?></th>
+<th class="srGender"><?php echo htmlspecialchars( xl('Sex'), ENT_NOQUOTES);?></th>
 <th class="srPhone"><?php echo htmlspecialchars( xl('Phone'), ENT_NOQUOTES);?></th>
 <th class="srSS"><?php echo htmlspecialchars( xl('SS'), ENT_NOQUOTES);?></th>
 <th class="srDOB"><?php echo htmlspecialchars( xl('DOB'), ENT_NOQUOTES);?></th>
@@ -315,7 +427,13 @@ else {
 if ($result) {
     foreach ($result as $iter) {
         echo "<tr class='oneresult' id='".htmlspecialchars( $iter['pid'], ENT_QUOTES)."'>";
-        echo  "<td class='srName'>" . htmlspecialchars($iter['lname'] . ", " . $iter['fname']) . "</td>\n";
+		if($from_page == "amc_report"){
+			echo  "<td class='srName'><a href='javascript:SelectPatient(".htmlspecialchars( $iter['pid'], ENT_QUOTES).");'>" . htmlspecialchars($iter['lname'] . ", " . $iter['fname']) . "</a></td>\n";
+		}else{
+			echo  "<td class='srName'>" . htmlspecialchars($iter['lname'] . ", " . $iter['fname']) . "</td>\n";
+		}
+        
+		echo  "<td class='srGender'>" . htmlspecialchars($iter['sex']) . "</td>\n";
         //other phone number display setup for tooltip
         $phone_biz = '';
         if ($iter{"phone_biz"} != "") {
@@ -428,15 +546,19 @@ if ($result) {
 </div>  <!-- end searchResults DIV -->
 
 <script language="javascript">
-
 // jQuery stuff to make the page a little easier to use
 
 $(document).ready(function(){
     // $("#searchparm").focus();
     $(".oneresult").mouseover(function() { $(this).addClass("highlight"); });
     $(".oneresult").mouseout(function() { $(this).removeClass("highlight"); });
-    $(".oneresult").click(function() { SelectPatient(this); });
+    $(".oneresult").click(function() { <?php if($from_page != "amc_report"){?>SelectPatient(this);<?php }?> });
     // $(".event").dblclick(function() { EditEvent(this); });
+	<?php
+	if($from_page == "amc_report"){?>
+		$("#searchResults tr").css({'cursor' :"default"});
+	<?php
+	}?>
 });
 
 var SelectPatient = function (eObj) {
@@ -453,14 +575,31 @@ else {
     $target = "top";
 }
 ?>
-    objID = eObj.id;
-    var parts = objID.split("~");
+	<?php
+	if($from_page == "amc_report"){?>
+		var pid = eObj;
+	<?php	
+	}else{
+	?>
+		objID = eObj.id;
+		var parts = objID.split("~");
+		var pid = parts[0]
+	<?php
+	}
+	?>
     <?php if (!$popup) echo "top.restoreSession();\n"; ?>
-    <?php if ($popup) echo "opener."; echo $target; ?>.location.href = '<?php echo $newPage; ?>' + parts[0];
+    <?php if ($popup) echo "opener."; echo $target; ?>.location.href = '<?php echo $newPage; ?>' + pid;
     <?php if ($popup) echo "window.close();\n"; ?>
     return true;
 }
 
+<?php
+	//print screen check
+	if($print_patients){
+?>
+		window.print();
+		window.close();
+<?php }?>
 </script>
 
 </body>

@@ -214,6 +214,12 @@ else {
      return true;
    <?php } ?>
  }
+ 
+ function patientPopUp(report_id, item_checked){
+	top.restoreSession();
+	var sLoc = '../main/finder/patient_select.php?popup=1&from_page=amc_report&report_id='+report_id+'&item_checked='+item_checked;
+	dlgopen(sLoc, '_blank', 650, 500);
+ }
 
 </script>
 
@@ -589,8 +595,13 @@ else {
   $firstProviderFlag = TRUE;
   $firstPlanFlag = TRUE;
   $existProvider = FALSE;
+  $cntRep = 1;
+  $noDataPatientArr = array();
   foreach ($dataSheet as $row) {
-
+	if( $type_report == "amc" ){
+		$noDataPatientArr = $row['failed_numer_clients'];
+		$report_id = $_GET['report_id'];
+	}
 ?>
 
  <tr bgcolor='<?php echo $bgcolor ?>'>
@@ -644,7 +655,11 @@ else {
      }
      echo "</td>";
      echo "<td align='center'>" . $row['total_patients'] . "</td>";
-     echo "<td align='center'>" . $row['pass_filter'] . "</td>";
+     if( ( count($noDataPatientArr) > 0 ) && ( $type_report == "amc" )){
+		echo "<td align='center'><a href=\"javascript:patientPopUp('$report_id', '$cntRep')\">" . $row['pass_filter'] . "</a></td>";
+	 }else{
+		echo "<td align='center'>" . $row['pass_filter'] . "</a></td>";
+	 }
      if ($type_report != "amc") {
        echo "<td align='center'>" . $row['excluded'] . "</td>";
      }
@@ -689,6 +704,7 @@ else {
  </tr>
 
 <?php
+	$cntRep++;
   }
 ?>
 </tbody>
