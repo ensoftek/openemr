@@ -2310,11 +2310,18 @@ CREATE TABLE `immunizations` (
   `created_by` bigint(20) default NULL,
   `updated_by` bigint(20) default NULL,
   `amount_administered` float DEFAULT NULL,			
-  `amount_administered_unit` varchar(50) DEFAULT NULL,			
+  `amount_administered_unit` float NULL DEFAULT NULL,			
   `expiration_date` date DEFAULT NULL,			
   `route` varchar(100) DEFAULT NULL,			
   `administration_site` varchar(100) DEFAULT NULL,			
   `added_erroneously` tinyint(1) NOT NULL DEFAULT '0',  
+  `vaccine_type_cvx_code` int(11) DEFAULT NULL,
+  `vaccine_administration_notes` varchar(100) DEFAULT NULL,
+  `presumed_immunity_snomed_code` int(11) DEFAULT NULL,
+  `immunization_dose` varchar(10) NOT NULL,
+  `refusal_reason` VARCHAR (100) NULL DEFAULT NULL,
+  `next_of_kin` VARCHAR (100) NULL DEFAULT NULL,
+  `status` VARCHAR (25) NULL DEFAULT NULL,
   PRIMARY KEY  (`id`),
   KEY `patient_id` (`patient_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
@@ -2706,6 +2713,11 @@ INSERT INTO `layout_options` (`form_id`,`field_id`,`group_name`,`title`,`seq`,`d
 INSERT INTO `layout_options` (`form_id`,`field_id`,`group_name`,`title`,`seq`,`data_type`,`uor`,`fld_length`,`max_length`,`list_id`,`titlecols`,`datacols`,`default_value`,`edit_options`,`description`,`fld_rows`) VALUES ('HIS','userarea12'        ,'5Other','User Defined Area 12',7,3,0,30,0,'',1,3,'','','User Defined', 3);
 
 INSERT INTO `layout_options` (`form_id`,`field_id`,`group_name`,`title`,`seq`,`data_type`,`uor`,`fld_length`,`max_length`,`list_id`,`titlecols`,`datacols`,`default_value`,`edit_options`,`description`,`fld_rows`) VALUES ('FACUSR', 'provider_id', '1General', 'Provider ID', 1, 2, 1, 15, 63, '', 1, 1, '', '', 'Provider ID at Specified Facility', 0);
+
+INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`) VALUES ('DEM', 'immu_effective_date', '3Choices', 'Immunization Registry Status Effective Date', 31, 4, 1, 0, 255, '', 1, 1, '', '', 'Immunization Registry Status Effective Date');
+INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`) VALUES ('DEM', 'immu_reg_status', '3Choices', 'Immunization Registry Status', 32, 1, 1, 0, 255, 'Immunization_Registry_Status', 1, 1, '', '', 'Immunization Registry Status');
+INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`) VALUES ('DEM', 'recal_effective_date', '3Choices', 'Recall Reminder Notices Effective Date', 33, 4, 1, 0, 255, '', 1, 1, '', '', 'Recall Reminder Notices Effective Date');
+INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`) VALUES ('DEM', 'recal_remind_note', '3Choices', 'Recall Reminder Notices', 34, 1, 1, 0, 255, 'Recall_Reminder_Notices', 1, 1, '', '', 'Recall Reminder Notices');
 
 -- --------------------------------------------------------
 
@@ -3121,6 +3133,7 @@ INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES (
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('drug_route','13','Both Ears',13,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('drug_route','14','Left Ear' ,14,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('drug_route','15','Right Ear',15,0);
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes) VALUES ('drug_route', 'INTRAMUSCULAR', 'INTRAMUSCULAR', 16, 0, 0, '', 'C28161');
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('drug_interval','0',''      ,0,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('drug_interval','1','b.i.d.',1,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('drug_interval','2','t.i.d.',2,0);
@@ -3302,6 +3315,9 @@ INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES (
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('proc_body_site','arm'    ,'Arm'    ,10,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('proc_body_site','buttock','Buttock',20,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('proc_body_site','oth'    ,'Other'  ,90,0);
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes) VALUES	('proc_body_site', 'Left_Arm', 'Left Arm', 100, 0, 0, '', 'LA');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes) VALUES	('proc_body_site', 'Right_Arm', 'Right Arm', 0, 0, 0, '', 'RA');
+
 
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists','proc_specimen','Procedure Specimen Types', 1,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('proc_specimen','blood' ,'Blood' ,10,0);
@@ -3934,6 +3950,98 @@ INSERT INTO list_options(list_id,option_id,title) VALUES ('lists','patient_flow_
 INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '1', 'Room 1', 10);
 INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '2', 'Room 2', 20);
 INSERT INTO list_options(list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '3', 'Room 3', 30);
+
+-- Immunization Statuses
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists','immunization_status','Immunization Status', 1,0);
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('immunization_status','completed','Completed',10,0);
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('immunization_status','not_completed','Not Completed',20,0);
+
+-- Immunization Refusal Reasons
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`) VALUES
+('lists', 'Refusal_Reason', 'Refusal Reason', 1, 1, 0, '', '', '', 0, 0),
+('Refusal_Reason', '01', 'Religious exemption', 1, 0, 0, '', '01', NULL, 0, 0),
+('Refusal_Reason', '02', 'Other', 2, 0, 0, '', '02', NULL, 0, 0),
+('Refusal_Reason', '03', 'Patient decision', 3, 0, 0, '', '03', NULL, 0, 0),
+('Refusal_Reason', '04', 'Parental Refusal', 4, 0, 0, '', '00', NULL, 0, 0),
+('Refusal_Reason', 'N/A', 'N/A', 0, 0, 0, '', '', NULL, 0, 0);
+
+-- Immunization Contact Relation aka Next To Kin
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`) VALUES
+('lists', 'Contact_Relationship', 'Contact Relationship', 1, 1, 0, '', '', '', 0, 0),
+('Contact_Relationship', 'N/A', 'N/A', 0, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_attorney', 'Attorney', 12, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_brother', 'Brother', 4, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_brother_or_sister-inlaw', 'Brother or Sister-In-Law', 14, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_child', 'Child', 15, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_clergy', 'Clergy', 31, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_conservator_or_guardian', 'Conservator or Guardian', 16, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_cousin', 'Cousin', 17, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_daughter', 'Daughter', 18, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_ex-spouse', 'Ex-Spouse', 19, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_executor', 'Executor', 33, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_father', 'Father', 1, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_fiduciary', 'Fiduciary', 9, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_friend', 'Friend', 5, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_godson_goddaughter', 'Godson or Goddaughter', 32, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_grandson_or_granddghtr', 'Grandson or Granddaughter', 22, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_greatniece_or_nephew', 'Great Niece or Nephew', 23, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_guardian', 'Guardian', 11, 0, 0, '', 'GRD', NULL, 0, 0),
+('Contact_Relationship', 'relation_legal', 'Legal', 10, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_mother', 'Mother', 1, 0, 0, '', 'MTH', NULL, 0, 0),
+('Contact_Relationship', 'relation_nephew_or_niece', 'Nephew or Niece', 25, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_niece_or_nephew-in-law', 'Niece or Nephew-In-Law', 26, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_poa_finance', 'POA Finance', 34, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_poa_medical', 'POA Medical', 35, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_responsible_person', 'Responsible Person', 36, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_sister', 'Sister', 3, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_son_daughter-in-law', 'Son or Daughter-In-Law', 28, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_spouse', 'Spouse', 2, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_stepson_or_stepdaughter', 'Stepson or Stepdaughter', 30, 0, 0, '', '', NULL, 0, 0),
+('Contact_Relationship', 'relation_step_brother', 'Step Brother', 37, 0, 0, '', '', NULL, 0, 0);
+
+
+-- Immunization Recall Reminder Notices
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`) VALUES
+('lists', 'Recall_Reminder_Notices', 'Recall Reminder Notices', 128, 1, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '03', 'Reminder/recall - no calls', 11, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '08', 'Reminder/recall - to provider', 12, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '11', 'Recall to provider', 6, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '04', 'Reminder only - any method', 7, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '05', 'Reminder only - no calls', 8, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '09', 'Reminder to provider', 9, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '02', 'Reminder/recall - any method', 10, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '10', 'Only reminder to provider, no recall', 3, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '06', 'Recall only - any method', 4, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '07', 'Recall only - no calls', 5, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '01', 'No reminder/recall', 1, 0, 0, '', '', '', 0, 0),
+('Recall_Reminder_Notices', '12', 'Only recall to provider, no reminder', 2, 0, 0, '', '', '', 0, 0);
+
+-- Immunization Registry Statuses
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`) VALUES
+('lists', 'Immunization_Registry_Status', 'Immunization Registry Status', 127, 1, 0, '', '', '', 0, 0),
+('Immunization_Registry_Status', '1', 'Active', 1, 0, 0, '', 'A', '', 0, 0),
+('Immunization_Registry_Status', '2', 'Inactive--Unspecified', 2, 0, 0, '', 'I', '', 0, 0),
+('Immunization_Registry_Status', '3', 'Inactive-Lost to follow-up (cannot contact)', 3, 0, 0, '', 'L', '', 0, 0),
+('Immunization_Registry_Status', '4', 'Inactive-Moved or gone elsewhere (transferred)', 4, 0, 0, '', 'M', '', 0, 0),
+('Immunization_Registry_Status', '5', 'Inactive-Permanently inactive (do not re-activate or add new en', 5, 0, 0, '', 'P', '', 0, 0),
+('Immunization_Registry_Status', '6', 'Unknown', 6, 0, 0, '', 'U', '', 0, 0);
+
+
+-- Immunization Vaccine Administration Notes
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`) VALUES
+	('lists', 'Vaccine_Administration_Notes', 'Vaccine Administration Notes', 129, 1, 0, '', '', '', 0, 0),
+	('Vaccine_Administration_Notes', '00', 'New immunization record', 1, 0, 0, '', '00', '', 0, 0),
+	('Vaccine_Administration_Notes', '01', 'Historical information - source unspecified', 2, 0, 0, '', '01', '', 0, 0),
+	('Vaccine_Administration_Notes', '02', 'Historical information - from other provider', 3, 0, 0, '', '02', '', 0, 0),
+	('Vaccine_Administration_Notes', '03', 'Historical information - from parent’s written record', 4, 0, 0, '', '03', '', 0, 0),
+	('Vaccine_Administration_Notes', '04', 'Historical information - from parent’s recall', 5, 0, 0, '', '04', '', 0, 0),
+	('Vaccine_Administration_Notes', '05', 'Historical information - from other registry', 6, 0, 0, '', '05', '', 0, 0),
+	('Vaccine_Administration_Notes', '06', 'Historical information - from birth certificate', 7, 0, 0, '', '06', '', 0, 0),
+	('Vaccine_Administration_Notes', '07', 'Historical information - from school record', 8, 0, 0, '', '07', '', 0, 0),
+	('Vaccine_Administration_Notes', '08', 'Historical information - from public agency', 9, 0, 0, '', '08', '', 0, 0),
+	('Vaccine_Administration_Notes', 'N/A', 'N/A', 0, 0, 0, '', 'N/A', '', 0, 0);
+
+
 -- --------------------------------------------------------
 
 -- 
@@ -4488,6 +4596,10 @@ CREATE TABLE `patient_data` (
   `deceased_reason` varchar(255) NOT NULL default '',
   `soap_import_status` TINYINT(4) DEFAULT NULL COMMENT '1-Prescription Press 2-Prescription Import 3-Allergy Press 4-Allergy Import',
   `cmsportal_login` varchar(60) NOT NULL default '',
+  `immu_effective_date` datetime NULL DEFAULT NULL,
+  `immu_reg_status` varchar(25) DEFAULT NULL,
+  `recal_effective_date` datetime NULL DEFAULT NULL,
+  `recal_remind_note` TEXT DEFAULT NULL,
   UNIQUE KEY `pid` (`pid`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
@@ -6166,12 +6278,12 @@ INSERT INTO list_options ( list_id, option_id, title, seq, is_default, codes ) V
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default, codes ) VALUES ('smoking_status', '16', 'Light tobacco smoker', 80, 0, 'SNOMED-CT:428061000124105');
 
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists'   ,'race','Race', 1,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value ) VALUES ('race', 'declne_to_specfy', 'Declined To Specify', 0, 0, 0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('race', 'amer_ind_or_alaska_native', 'American Indian or Alaska Native', 10, 0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('race', 'Asian', 'Asian',20,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('race', 'black_or_afri_amer', 'Black or African American',30,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('race', 'native_hawai_or_pac_island', 'Native Hawaiian or Other Pacific Islander',40,0);
-INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('race', 'white', 'White',50,0);
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes ) VALUES ('race', 'declne_to_specfy', 'Declined To Specify', 0, 0, 0, '', '2131-1');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes ) VALUES ('race', 'amer_ind_or_alaska_native', 'American Indian or Alaska Native', 10, 0, 0, '', '1002-5');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes ) VALUES ('race', 'Asian', 'Asian', 20, 0,  0, '', '2028-9');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes ) VALUES ('race', 'black_or_afri_amer', 'Black or African American',30, 0, 0, '', '2054-5');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes ) VALUES ('race', 'native_hawai_or_pac_island', 'Native Hawaiian or Other Pacific Islander',40,0, 0, '', '2076-8');
+INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value, mapping, notes ) VALUES ('race', 'white', 'White',50,0, 0, '', '2106-3');
 
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists'   ,'ethnicity','Ethnicity', 1,0);
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default, option_value ) VALUES ('ethnicity', 'declne_to_specfy', 'Declined To Specify', 0, 0, 0);

@@ -1,4 +1,10 @@
 <?php
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+
+// 07-2015: Ensoftek: Edited for MU2 170.314(f)(2).
 
 //SANITIZE ALL ESCAPES
 $sanitize_all_escapes=true;
@@ -22,9 +28,15 @@ if (isset($_GET['mode'])) {
 	if ($_GET['mode'] == "add") {		
         $sql = "REPLACE INTO immunizations set 
                       id = ?,
-                      administered_date = if(?,?,NULL),  
+                      administered_date = if(?,?,NULL),
+                      expiration_date = if(?,?,NULL),
                       immunization_id = ?,
+					  refusal_reason = ?,
+					  vaccine_administration_notes = ?,
+					  next_of_kin = ?,
                       cvx_code = ?, 
+					  vaccine_type_cvx_code = ?,
+					  presumed_immunity_snomed_code = ?,
                       manufacturer = ?,
                       lot_number = ?,
                       administered_by_id = if(?,?,NULL),
@@ -35,17 +47,24 @@ if (isset($_GET['mode'])) {
                       patient_id   = ?,
                       created_by = ?,
                       updated_by = ?,
-   				      create_date = now(), 
-					  amount_administered = ?,
+					  immunization_dose = ?,
+                      create_date = '".date("Y-m-d H:i:s")."',
+                      amount_administered = ?,
 					  amount_administered_unit = ?,
-					  expiration_date = if(?,?,NULL),
 					  route = ?,
-					  administration_site = ? ";
+                      administration_site = ?,
+					  status = ?";
 	$sqlBindArray = array(
 	             trim($_GET['id']),
 		     trim($_GET['administered_date']), trim($_GET['administered_date']),
+             trim($_GET['expiration_date']), trim($_GET['expiration_date']),
 		     trim($_GET['form_immunization_id']),
+			 trim($_GET['refusal_reason']),
+			 trim($_GET['vaccine_administration_notes']),
+			 trim($_GET['next_of_kin']),
 		     trim($_GET['cvx_code']),
+		     trim($_GET['vaccine_type_cvx_code']),
+		     trim($_GET['presumed_immunity_snomed_code']),
 		     trim($_GET['manufacturer']),
 		     trim($_GET['lot_number']),
 		     trim($_GET['administered_by_id']), trim($_GET['administered_by_id']),
@@ -55,17 +74,18 @@ if (isset($_GET['mode'])) {
 		     trim($_GET['note']),
 		     $pid,
 		     $_SESSION['authId'],
-		     $_SESSION['authId'],
-			 trim($_GET['immuniz_amt_adminstrd']),
-			 trim($_GET['form_drug_units']),
-			 trim($_GET['immuniz_exp_date']), trim($_GET['immuniz_exp_date']),
+		     $_SESSION['authId'],	 
+			 trim($_GET['immunization_dose']),
+             trim($_GET['immuniz_amt_adminstrd']),
+             trim($_GET['form_drug_units']),
 			 trim($_GET['immuniz_route']),
-			 trim($_GET['immuniz_admin_ste'])			 
+            trim($_GET['immuniz_admin_ste']),	
+		     trim($_GET['immuniz_status']),	
 		     );
         sqlStatement($sql,$sqlBindArray);
         $administered_date=date('Y-m-d H:i');
 		$education_date=date('Y-m-d');
-        $immunization_id=$cvx_code=$manufacturer=$lot_number=$administered_by_id=$note=$id="";
+        $immunization_id=$cvx_code=$manufacturer=$lot_number=$administered_by_id=$note=$id=$refusal_reason=$next_of_kin=$vaccine_type_cvx_code=$vaccine_administration_notes=$presumed_immunity_snomed_code="";
         $administered_by=$vis_date="";
 		
     }
@@ -90,44 +110,59 @@ if (isset($_GET['mode'])) {
     elseif ($_GET['mode'] == "edit" ) {
         $sql = "select * from immunizations where id = ?";
         $result = sqlQuery($sql, array($_GET['id']));
-		
-		$administered_date = new DateTime($result['administered_date']);
-		$administered_date = $administered_date->format('Y-m-d H:i');
-		
-		$immuniz_amt_adminstrd = $result['amount_administered'];
-		$drugunitselecteditem = $result['amount_administered_unit'];
-        $immunization_id = $result['immunization_id'];	
-		$immuniz_exp_date = $result['expiration_date'];
-		
-		$cvx_code = $result['cvx_code'];
-        $code_text = '';
-        if ( !(empty($cvx_code)) ) {
-            $query = "SELECT codes.code_text as `code_text`, codes.code as `code` " .
-                     "FROM codes " .
-                     "LEFT JOIN code_types on codes.code_type = code_types.ct_id " .
-                     "WHERE code_types.ct_key = 'CVX' AND codes.code = ?";
+        $administered_date = oeFormatShortDate(substr($result['administered_date'],0,10))." ".substr($result['administered_date'],11,18);
+        $immuniz_amt_adminstrd = $result['amount_administered'];
+        $drugunitselecteditem = $result['amount_administered_unit'];
+        $expiration_date = oeFormatShortDate($result['expiration_date']);
+        $immunization_id = $result['immunization_id'];
+		$refusal_reason = $result['refusal_reason'];
+		$vaccine_administration_notes = $result['vaccine_administration_notes'];
+		$next_of_kin = $result['next_of_kin'];
+        $cvx_code = $result['cvx_code'];
+            $code_text = '';
+            if ( !(empty($cvx_code)) ) {
+                $query = "SELECT codes.code_text as `code_text`, codes.code as `code` " .
+                         "FROM codes " .
+                         "LEFT JOIN code_types on codes.code_type = code_types.ct_id " .
+                         "WHERE code_types.ct_key = 'CVX' AND codes.code = ?";
             $result_code_text = sqlQuery($query, array($cvx_code));
             $code_text = $result_code_text['code_text'];
-        }
+            }
+
+		$vaccine_type_cvx_code = $result['vaccine_type_cvx_code'];
+            $vaccine_type_cvx_code_text = '';
+            if ( !(empty($vaccine_type_cvx_code)) ) {
+                $query = "SELECT codes.code_text as `vaccine_type_cvx_code_text`, codes.code as `code` " .
+                         "FROM codes " .
+                         "LEFT JOIN code_types on codes.code_type = code_types.ct_id " .
+                         "WHERE code_types.ct_key = 'CVX' AND codes.code = ?";
+            $result_code_text = sqlQuery($query, array($vaccine_type_cvx_code));
+            $vaccine_type_cvx_code_text = $result_code_text['vaccine_type_cvx_code_text'];
+            }
+			
+		$presumed_immunity_snomed_code = $result['presumed_immunity_snomed_code'];
+            $presumed_immunity_snomed_code_text = '';
+            if ( !(empty($presumed_immunity_snomed_code)) ) {
+                $query = "SELECT codes.code_text as `presumed_immunity_snomed_code_text`, codes.code as `code` " .
+                         "FROM codes " .
+                         "LEFT JOIN code_types on codes.code_type = code_types.ct_id " .
+                         "WHERE code_types.ct_key = 'SNOMED-CT' AND codes.code = ?";
+            $result_code_text = sqlQuery($query, array($presumed_immunity_snomed_code));
+            $presumed_immunity_snomed_code_text = $result_code_text['presumed_immunity_snomed_code_text'];
+            }
+			
+			
         $manufacturer = $result['manufacturer'];
         $lot_number = $result['lot_number'];
         $administered_by_id = ($result['administered_by_id'] ? $result['administered_by_id'] : 0);
-
-		$administered_by = "";
-		if (!$result['administered_by'] && !$row['administered_by_id']) { 
-    		$stmt = "select concat(lname,', ',fname) as full_name ".
-            		"from users where ".
-            		"id=?";
-    		$user_result = sqlQuery($stmt, array($result['administered_by_id']));
-    		$administered_by = $user_result['full_name'];
-		}
-		
-        $education_date = $result['education_date'];
-        $vis_date = $result['vis_date'];
+        $administered_by = $result['administered_by'];
+        $education_date = oeFormatShortDate($result['education_date']);
+        $vis_date = oeFormatShortDate($result['vis_date']);
 		$immuniz_route = $result['route'];
-		$immuniz_admin_ste = $result['administration_site'];
+        $immuniz_admin_ste = $result['administration_site'];
+        $immuniz_status = $result['status'];
         $note = $result['note'];
-		$isAddedError = $result['added_erroneously'];
+		$immunization_dose = $result['immunization_dose'];
 		
 	//set id for page
 	$id = $_GET['id'];
@@ -135,24 +170,13 @@ if (isset($_GET['mode'])) {
     }
 }
 
+// July-2015: Ensoftek: Set the default.
+ $useCVX = true;
+
 // Decide whether using the CVX list or the custom list in list_options
 if ($GLOBALS['use_custom_immun_list']) {
   // user forces the use of the custom list
   $useCVX = false;
-}
-else {
-  if ($_GET['mode'] == "edit") {
-    //depends on if a cvx code is enterer already
-    if (empty($cvx_code)) {
-      $useCVX = false;
-    }
-    else {
-      $useCVX = true;
-    }
-  }
-  else { // $_GET['mode'] == "add"
-    $useCVX = true;
-  }
 }
 
 // set the default sort method for the list of past immunizations
@@ -220,56 +244,139 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
 <input type="hidden" name="pid" id="pid" value="<?php echo htmlspecialchars( $pid, ENT_QUOTES); ?>"> 
 <br>
       <table border=0 cellpadding=1 cellspacing=1>
-	  <?php
-	  	if ($isAddedError) {
-			echo "<tr><font color='red'><b>" . xlt("Entered in Error") . "</b></font></tr>";
-		}
-	  ?> 
 
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Refusal Reason'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+				<?php echo generate_select_list('refusal_reason', 'refusal_reason', $refusal_reason, '', '');?>		  
+          </td>
+        </tr>
+		
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Guardian or Responsible Party'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+				<?php echo generate_select_list('next_of_kin', 'contact_relationship', $next_of_kin, '', '');?>		  
+          </td>
+        </tr>
+	  	  
       <?php if (!($useCVX)) { ?>
         <tr>
           <td align="right">
             <span class=text>
-              <?php echo htmlspecialchars( xl('Immunization'), ENT_NOQUOTES); ?>            </span>          </td>
+              <?php echo htmlspecialchars( xl('Immunization'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
           <td>
               <?php
                	// Modified 7/2009 by BM to incorporate the immunization items into the list_options listings
                 generate_form_field(array('data_type'=>1,'field_id'=>'immunization_id','list_id'=>'immunizations','empty_title'=>'SKIP'), $immunization_id);
-              ?>          
-		   </td>
+              ?>
+          </td>
         </tr>
       <?php } else { ?>
 	    <tr>
           <td align="right" valign="top" style="padding-top:4px;">
             <span class=text>
-              <?php echo htmlspecialchars( xl('Immunization'), ENT_NOQUOTES); ?> (<?php echo htmlspecialchars( xl('CVX Code'), ENT_NOQUOTES); ?>)            </span>          </td>
+              <?php echo htmlspecialchars( xl('Immunization'), ENT_NOQUOTES); ?> (<?php echo htmlspecialchars( xl('CVX Code'), ENT_NOQUOTES); ?>)
+            </span>
+          </td>
 		  <td>
 		   <input type='text' size='10' name='cvx_code' id='cvx_code'
 		    value='<?php echo htmlspecialchars($cvx_code,ENT_QUOTES); ?>' onclick='sel_cvxcode(this)'
 		    title='<?php echo htmlspecialchars( xl('Click to select or change CVX code'), ENT_QUOTES); ?>'
 		    />
 		    <div id='cvx_description' style='display:inline; float:right; padding:3px; margin-left:3px; width:400px'>
-		        <?php echo htmlspecialchars( xl( $code_text ), ENT_QUOTES); ?>		    </div>		  </td>
+		        <?php echo htmlspecialchars( xl( $code_text ), ENT_QUOTES); ?>
+		    </div>
+		  </td>
 		</tr>
+
+	    <tr>
+          <td align="right" valign="top" style="padding-top:4px;">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Disease with presumed immunity, when no vaccine administered'), ENT_NOQUOTES); ?> (<?php echo htmlspecialchars( xl('SNOMED-CT Code'), ENT_NOQUOTES); ?>)
+            </span>
+          </td>
+		  <td>
+		   <input type='text' size='10' name='presumed_immunity_snomed_code' id='presumed_immunity_snomed_code'
+		    value='<?php echo htmlspecialchars($presumed_immunity_snomed_code,ENT_QUOTES); ?>' onclick='sel_snomedcode(this)'
+		    title='<?php echo htmlspecialchars( xl('Click to select or change SNOMED-CT code'), ENT_QUOTES); ?>'
+		    />
+		    <div id='presumed_immunity_snomed_description' style='display:inline; float:right; padding:3px; margin-left:3px; width:400px'>
+		        <?php echo htmlspecialchars( xl( $presumed_immunity_snomed_code_text ), ENT_QUOTES); ?>
+		    </div>
+		  </td>
+		</tr>
+
+		
+	    <tr>
+          <td align="right" valign="top" style="padding-top:4px;">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Vaccine Type'), ENT_NOQUOTES); ?> (<?php echo htmlspecialchars( xl('CVX Code'), ENT_NOQUOTES); ?>)
+            </span>
+          </td>
+		  <td>
+		   <input type='text' size='10' name='vaccine_type_cvx_code' id='vaccine_type_cvx_code'
+		    value='<?php echo htmlspecialchars($vaccine_type_cvx_code,ENT_QUOTES); ?>' onclick='sel_cvxcode(this)'
+		    title='<?php echo htmlspecialchars( xl('Click to select or change CVX code'), ENT_QUOTES); ?>'
+		    />
+		    <div id='vaccine_type_cvx_description' style='display:inline; float:right; padding:3px; margin-left:3px; width:400px'>
+		        <?php echo htmlspecialchars( xl( $vaccine_type_cvx_code_text ), ENT_QUOTES); ?>
+		    </div>
+		  </td>
+		</tr>
+		
       <?php } ?>
+
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Administration Notes'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+				<?php echo generate_select_list('vaccine_administration_notes', 'vaccine_administration_notes', $vaccine_administration_notes, '', '');?>		  
+          </td>
+        </tr>
+
+	  
+	  <tr>
+		 <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Dose'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+		  <td>
+			<input type="text" name="immunization_dose" id="immunization_dose" size='10' value="<?php echo htmlspecialchars($immunization_dose,ENT_QUOTES);?>">
+		  </td>
+	  </tr>
         
         <tr>
           <td align="right">
             <span class=text>
-              <?php echo htmlspecialchars( xl('Date & Time Administered'), ENT_NOQUOTES); ?>            </span>          </td>
-          <td><table border="0">
-     <tr>
-       <td><input type='text' size='14' name="administered_date" id="administered_date"
-    		value='<?php echo $administered_date ? htmlspecialchars( $administered_date, ENT_QUOTES) : date('Y-m-d H:i'); ?>'
-    		title='<?php echo htmlspecialchars( xl('yyyy-mm-dd Hours(24):minutes'), ENT_QUOTES); ?>'
-    		onKeyUp='datekeyup(this,mypcc)' onBlur='dateblur(this,mypcc);'
-    		/>
-         	<img src='<?php echo $rootdir; ?>/pic/show_calendar.gif' align='absbottom' width='24' height='22'
-    			id='img_administered_date' border='0' alt='[?]' style='cursor:pointer;cursor:hand'
-    			title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'>
-		</td>
-     </tr>
-   </table></td>
+              <?php echo htmlspecialchars( xl('Date Administered'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+             
+   <input type='text' size='18' name="administered_date" id="administered_date"
+          value='<?php echo $administered_date ? htmlspecialchars( $administered_date, ENT_QUOTES) : oeFormatShortDate(date('Y-m-d'))." ".date('H:i:s'); ?>'
+    title='<?php echo htmlspecialchars( xl('yyyy-mm-dd'), ENT_QUOTES); ?>'
+    onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc);'
+    />
+   <img src='<?php echo $rootdir; ?>/pic/show_calendar.gif' align='absbottom' width='24' height='22'
+    id='img_administered_date' border='0' alt='[?]' style='cursor:pointer;cursor:hand'
+    title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'>
+
+          </td>
         </tr>
         <tr>
           <td align="right"><span class="text"><?php echo htmlspecialchars( xl('Amount Administered'), ENT_NOQUOTES); ?></span></td>
@@ -279,39 +386,53 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
 		  </td>
         </tr>
         <tr>
-          <td align="right"><span class="text"><?php echo htmlspecialchars( xl('Immunization Expiration Date'), ENT_NOQUOTES); ?></span></td>
-          <td class='text'><input type='text' size='10' name="immuniz_exp_date" id="immuniz_exp_date"
-    value='<?php echo $immuniz_exp_date ? htmlspecialchars( $immuniz_exp_date, ENT_QUOTES) : ''; ?>'
-    title='<?php echo htmlspecialchars( xl('yyyy-mm-dd'), ENT_QUOTES); ?>'
-    onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc);'
-    />
-          <img src='<?php echo $rootdir; ?>/pic/show_calendar.gif' align='absbottom' width='24' height='22'
-    id='img_immuniz_exp_date' border='0' alt='[?]' style='cursor:pointer;cursor:hand'
-    title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'></td>
-        </tr>		
-        <tr>
-          <td align="right">
-            <span class=text>
-              <?php echo htmlspecialchars( xl('Immunization Manufacturer'), ENT_NOQUOTES); ?>            </span>          </td>
+          <td align="right" class="text">
+              <?php echo htmlspecialchars( xl('Expiration Date'), ENT_NOQUOTES); ?>
+          </td>
           <td>
-            <input class='text' type='text' name="manufacturer" size="25" value="<?php echo htmlspecialchars( $manufacturer, ENT_QUOTES); ?>">          </td>
+                <?php $expiration_date_format = oeFormatShortDate($expiration_date)?>
+            <input type='text' size='10' name="expiration_date" id="expiration_date"
+                    value='<?php echo $expiration_date_format? htmlspecialchars( $expiration_date, ENT_QUOTES) : oeFormatShortDate(date('Y-m-d')); ?>'
+                    title='<?php echo htmlspecialchars( xl('yyyy-mm-dd'), ENT_QUOTES); ?>'
+                    onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc);'
+            />
+            <img src='<?php echo $rootdir; ?>/pic/show_calendar.gif' align='absbottom' width='24' height='22'
+                id='img_expiration_date' border='0' alt='[?]' style='cursor:pointer;'
+                title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'
+            />
+          </td>
         </tr>
         <tr>
           <td align="right">
             <span class=text>
-              <?php echo htmlspecialchars( xl('Immunization Lot Number'), ENT_NOQUOTES); ?>            </span>          </td>
+              <?php echo htmlspecialchars( xl('Immunization Manufacturer'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
           <td>
-            <input class='text' type='text' name="lot_number" size="25" value="<?php echo htmlspecialchars( $lot_number, ENT_QUOTES); ?>">          </td>
+            <input class='text' type='text' name="manufacturer" size="25" value="<?php echo htmlspecialchars( $manufacturer, ENT_QUOTES); ?>">
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Immunization Lot Number'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+            <input class='text' type='text' name="lot_number" size="25" value="<?php echo htmlspecialchars( $lot_number, ENT_QUOTES); ?>">
+          </td>
         </tr>
         <tr>
           <td align="right">
             <span class='text'>
-              <?php echo htmlspecialchars( xl('Name and Title of Immunization Administrator'), ENT_NOQUOTES); ?>            </span>          </td>
+              <?php echo htmlspecialchars( xl('Name and Title of Immunization Administrator'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
           <td class='text'>
             <input type="text" name="administered_by" id="administered_by" size="25" value="<?php echo htmlspecialchars( $administered_by, ENT_QUOTES); ?>">
             <?php echo htmlspecialchars( xl('or choose'), ENT_NOQUOTES); ?>
 <!-- NEEDS WORK -->
-            <select name="administered_by_id" id='administered_by_id'>
+            <select name="administered_by_id" id='administered_by_id' style='width:400px;'>
             <option value=""></option>
               <?php
                 $sql = "select id, concat(lname,', ',fname) as full_name " .
@@ -325,68 +446,84 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
                   echo htmlspecialchars( $row{'full_name'}, ENT_NOQUOTES) . '</OPTION>';
                 }
               ?>
-            </select>          </td>
+            </select>
+          </td>
         </tr>
         <tr>
           <td align="right" class="text">
-              <?php echo htmlspecialchars( xl('Date Immunization Information Statements Given'), ENT_NOQUOTES); ?>          </td>
+              <?php echo htmlspecialchars( xl('Date Immunization Information Statements Given'), ENT_NOQUOTES); ?>
+          </td>
           <td>
+                <?php $education_date_format = oeFormatShortDate($education_date)?>
             <input type='text' size='10' name="education_date" id="education_date"
-                    value='<?php echo $education_date? htmlspecialchars( $education_date, ENT_QUOTES) : date('Y-m-d'); ?>'
+                    value='<?php echo $education_date_format? htmlspecialchars( $education_date, ENT_QUOTES) : oeFormatShortDate(date('Y-m-d')); ?>'
                     title='<?php echo htmlspecialchars( xl('yyyy-mm-dd'), ENT_QUOTES); ?>'
                     onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc);'
             />
             <img src='<?php echo $rootdir; ?>/pic/show_calendar.gif' align='absbottom' width='24' height='22'
                 id='img_education_date' border='0' alt='[?]' style='cursor:pointer;'
                 title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'
-            />          </td>
+            />
+          </td>
         </tr>
         <tr>
           <td align="right" class="text">
               <?php echo htmlspecialchars( xl('Date of VIS Statement'), ENT_NOQUOTES); ?>
-              (<a href="http://www.cdc.gov/vaccines/pubs/vis/default.htm" title="<?php echo htmlspecialchars( xl('Help'), ENT_QUOTES); ?>" target="_blank">?</a>)          </td>
+              (<a href="http://www.cdc.gov/vaccines/pubs/vis/default.htm" title="<?php echo htmlspecialchars( xl('Help'), ENT_QUOTES); ?>" target="_blank">?</a>)
+          </td>
           <td>
+              <?php $vis_date_format = oeFormatShortDate($vis_date); ?>
             <input type='text' size='10' name="vis_date" id="vis_date"
-                    value='<?php echo $vis_date ? htmlspecialchars( $vis_date, ENT_QUOTES) : date('Y-m-d'); ?>'
+                   value='<?php echo $vis_date_format ? htmlspecialchars( $vis_date, ENT_QUOTES) : oeFormatShortDate(date('Y-m-d')); ?>'
                     title='<?php echo htmlspecialchars( xl('yyyy-mm-dd'), ENT_QUOTES); ?>'
                     onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc);'
             />
             <img src='<?php echo $rootdir; ?>/pic/show_calendar.gif' align='absbottom' width='24' height='22'
                 id='img_vis_date' border='0' alt='[?]' style='cursor:pointer;'
                 title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'
-            />          </td>
+            />
+          </td>
         </tr>
-        <tr>
+		<tr>
           <td align="right" class='text'><?php echo htmlspecialchars( xl('Route'), ENT_NOQUOTES); ?></td>
           <td>
 		  	<?php echo generate_select_list('immuniz_route', 'drug_route', $immuniz_route, 'Select Route', '');?>		  
 		  </td>
-        </tr>
+        </tr>		
         <tr>
           <td align="right" class='text'><?php echo htmlspecialchars( xl('Administration Site'), ENT_NOQUOTES); ?></td>
           <td>
 		  	<?php echo generate_select_list('immuniz_admin_ste', 'proc_body_site', $immuniz_admin_ste, 'Select Administration Site', ' ');?>
 		  </td>
         </tr>
+		 <tr>
+          <td align="right" class='text'><?php echo htmlspecialchars( xl('Completion Status'), ENT_NOQUOTES); ?></td>
+          <td>
+		  	<?php echo generate_select_list('immuniz_status', 'immunization_status', $immuniz_status, 'Select Status', ' ');?>
+		  </td>
+        </tr>
         <tr>
           <td align="right" class='text'>
-              <?php echo htmlspecialchars( xl('Notes'), ENT_NOQUOTES); ?>          </td>
+              <?php echo htmlspecialchars( xl('Notes'), ENT_NOQUOTES); ?>
+          </td>
           <td>
-            <textarea class='text' name="note" id="note" rows=5 cols=25><?php echo htmlspecialchars( $note, ENT_NOQUOTES); ?></textarea>          </td>
+            <textarea class='text' name="note" id="note" rows=5 cols=25><?php echo htmlspecialchars( $note, ENT_NOQUOTES); ?></textarea>
+          </td>
         </tr>
         <tr>
           <td colspan="3" align="center">
-
+	
 	    <input type="button" name="save" id="save" value="<?php echo htmlspecialchars( xl('Save Immunization'), ENT_QUOTES); ?>">
 	
             <input type="button" name="print" id="print" value="<?php echo htmlspecialchars( xl('Print Record') . xl('PDF','',' (',')'), ENT_QUOTES); ?>">
 	
 	    <input type="button" name="printHtml" id="printHtml" value="<?php echo htmlspecialchars( xl('Print Record') . xl('HTML','',' (',')'), ENT_QUOTES); ?>">
             
-            <input type="reset" name="clear" id="clear" value="<?php echo htmlspecialchars( xl('Clear'), ENT_QUOTES); ?>">          </td>
+            <input type="reset" name="clear" id="clear" value="<?php echo htmlspecialchars( xl('Clear'), ENT_QUOTES); ?>">
+          </td>
         </tr>
       </table>
-</form>
+    </form>
 
 <div id="immunization_list">
 
@@ -405,7 +542,8 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
         <span class='small' style='font-family:arial'><?php if ($sortby == 'date') { echo 'v'; } ?></span>
     </th>
 	<th><?php echo htmlspecialchars( xl('Amount'), ENT_NOQUOTES); ?></th>
-	<th><?php echo xlt('Expiration'); ?></th>
+	<th><?php echo htmlspecialchars( xl('Expiration Date'), ENT_NOQUOTES); ?></th>
+    <th><?php echo htmlspecialchars( xl('Dose'), ENT_NOQUOTES); ?></th>
     <th><?php echo htmlspecialchars( xl('Manufacturer'), ENT_NOQUOTES); ?></th>
     <th><?php echo htmlspecialchars( xl('Lot Number'), ENT_NOQUOTES); ?></th>
     <th><?php echo htmlspecialchars( xl('Administered By'), ENT_NOQUOTES); ?></th>
@@ -503,7 +641,8 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
 <script language="javascript">
 /* required for popup calendar */
 Calendar.setup({inputField:"administered_date", ifFormat:"%Y-%m-%d %H:%M", button:"img_administered_date", showsTime:true});
-Calendar.setup({inputField:"immuniz_exp_date", ifFormat:"%Y-%m-%d", button:"img_immuniz_exp_date"});
+Calendar.setup({inputField:"expiration_date", ifFormat:"%Y-%m-%d", button:"img_expiration_date"});
+//Calendar.setup({inputField:"immuniz_exp_date", ifFormat:"%Y-%m-%d", button:"img_immuniz_exp_date"}); // July-2015: Ensoftek: Not used
 Calendar.setup({inputField:"education_date", ifFormat:"%Y-%m-%d", button:"img_education_date"});
 Calendar.setup({inputField:"vis_date", ifFormat:"%Y-%m-%d", button:"img_vis_date"});
 
@@ -596,16 +735,55 @@ function sel_cvxcode(e) {
  dlgopen('../encounter/find_code_popup.php?codetype=CVX', '_blank', 500, 400);
 }
 
+// July-2015: Ensoftek
+function sel_snomedcode(e) {
+ current_code = "snomed";
+ current_sel_name = e.name;
+ current_sel_id = e.id;
+ $('#FindSnomedCode').trigger('click');	
+}
+
+
 // This ensures the cvx centric entry is filled.
-function validate_cvx() {
- if (document.add_immunization.cvx_code.value>0) {
-  return true;
- }
- else {
-  document.add_immunization.cvx_code.style.backgroundColor="red";
-  document.add_immunization.cvx_code.focus();
-  return false;
- }   
+function validate_cvx() 
+{
+      // July-2015: Ensoftek: If there is a "Refusal Reason", then skip CVX code validation
+     if (document.add_immunization.refusal_reason.value != "N/A") 
+	 {
+		return true;
+	 }
+	 
+      // July-2015: Ensoftek: Validate CVX code only if "Vaccine Administration Notes" is "New Immunization record" OR "N/A"
+	 if ( (document.add_immunization.vaccine_administration_notes.value != "00") && (document.add_immunization.vaccine_administration_notes.value != "N/A") )
+	 {
+		return true;
+	 }
+	 
+	 // If vaccine not administered because of presumed immunization, no need to validate vaccine type
+	 if ( (document.add_immunization.cvx_code.value > 0) && (document.add_immunization.presumed_immunity_snomed_code.value > 0) ) 
+	 {
+		   return true;
+	 }
+	 
+ 
+	 if ( (document.add_immunization.cvx_code.value > 0) && (document.add_immunization.vaccine_type_cvx_code.value > 0) ) 
+	 {
+		   return true;
+	 }
+	 else 
+	 {
+	      if ( document.add_immunization.cvx_code.value <= 0 )
+		  {
+			  document.add_immunization.cvx_code.style.backgroundColor="red";
+			  document.add_immunization.cvx_code.focus();
+		  }
+		  else
+		  {
+			  document.add_immunization.vaccine_type_cvx_code.style.backgroundColor="red";
+			  document.add_immunization.vaccine_type_cvx_code.focus();
+    	  }
+		  return false;
+	}   
 }
 
 </script>
