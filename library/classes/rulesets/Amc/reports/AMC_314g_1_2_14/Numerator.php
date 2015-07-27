@@ -1,10 +1,10 @@
 <?php
-// Copyright (c) 2015 Ensoftek, Inc
+// Copyright (C) 2015 Ensoftek Inc
 //
-// This program is protected by copyright laws; you may not redistribute it and/or
-// modify it in part or whole for any purpose without prior express written permission 
-// from EnSoftek, Inc.
-//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 
 class AMC_314g_1_2_14_Numerator implements AmcFilterIF
 {
@@ -17,10 +17,6 @@ class AMC_314g_1_2_14_Numerator implements AmcFilterIF
     {
 		//The number of patients in the denominator who have timely (within 4 business days after the information is available to the EP) on-line access to their health information. 
 		//Patient Portal has access to done V/D/T
-		
-		// Convert the date/time to UTC as all the date information is stored in db as UTC
-		$beginDate = date_to_utc("Y-m-d H:i:s",$beginDate);
-		$endDate = date_to_utc("Y-m-d H:i:s",$endDate);
 		$portalQry = "SELECT count(*) as cnt FROM patient_data pd ".
 					 "INNER JOIN ccda_log cl ON pd.pid = cl.patient_id AND cl.user_type = 2 AND cl.event IN ('patient-record-view', 'patient-record-download', 'patient-record-transmit') ".
 					 "WHERE  pd.pid = ? AND cl.date BETWEEN ? AND ?";

@@ -286,13 +286,8 @@ function collectItemizedRuleDisplayTitle($report_id, $itemized_test_id, $numerat
 	$dispTitle = "";
 	$report_view = collectReportDatabase($report_id);
 	$type_report = $report_view['type'];
-	//AMC 2014 set dividing into 2 stages Check
-	$report_check = "amc_2014";
-	if (strpos($type_report, $report_check) !== false) {
-		//$stage_report = str_replace($report_check."_", "", $type_report);  
-		$type_report = $report_check;
-	}
-	$type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014") ||
+	
+	$type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ||
 	($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) ? $type_report : "standard";
 	$dataSheet = json_decode($report_view['data'],TRUE);
 	foreach ($dataSheet as $row) {
@@ -326,11 +321,17 @@ function collectItemizedRuleDisplayTitle($report_id, $itemized_test_id, $numerat
               $tempCqmAmcString .= " " . xlt('AMC-2011') . ":" . text($row['amc_code']) . " ";
             }
           }
-          if ($type_report == "amc_2014") {
+          if ($type_report == "amc_2014_stage1") {
             if (!empty($row['amc_code_2014'])) {
-              $tempCqmAmcString .= " " . xlt('AMC-2014') . ":" . text($row['amc_code_2014']) . " ";
+              $tempCqmAmcString .= " " . xlt('AMC-2014'). " ". xlt('Stage I') . ":" . text($row['amc_code_2014']) . " ";
             }
           }
+		  if ($type_report == "amc_2014_stage2") {
+            if (!empty($row['amc_code_2014'])) {
+              $tempCqmAmcString .= " " . xlt('AMC-2014'). " ". xlt('Stage II') . ":" . text($row['amc_code_2014']) . " ";
+            }
+          }
+		  
           if (!empty($tempCqmAmcString)) {
             $dispTitle .=  "(".$tempCqmAmcString.")";
           }

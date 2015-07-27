@@ -1,9 +1,10 @@
 <?php
-// Copyright (c) 2015 Ensoftek, Inc
+// Copyright (C) 2015 Ensoftek Inc
 //
-// This program is protected by copyright laws; you may not redistribute it and/or
-// modify it in part or whole for any purpose without prior express written permission 
-// from EnSoftek, Inc.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 
 class AMC_304i_STG1_Numerator implements AmcFilterIF
 {
@@ -19,8 +20,8 @@ class AMC_304i_STG1_Numerator implements AmcFilterIF
 					"WHERE map_category = 'form_encounter' ".
 					"AND amc_id IN( 'med_reconc_amc', 'provide_sum_pat_amc' ) ".
 					"AND from_ccda = 1 ".
-					"AND map_id = '".$patient->object['encounter']."'";
-		$check = sqlQuery($sumQry); 
+					"AND map_id = ? ";
+		$check = sqlQuery($sumQry, array($patient->object['encounter'])); 
 		if ($check['cnt'] > 0){
 			return true;
 		}else{

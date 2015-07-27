@@ -39,18 +39,11 @@ if (!empty($report_id)) {
   $date_report = $report_view['date_report'];
   $type_report = $report_view['type'];
   
-  //AMC 2014 set dividing into 2 stages Check
-  $report_check = "amc_2014";
-  if (strpos($type_report, $report_check) !== false) {
-	$stage_report = str_replace($report_check."_", "", $type_report);  
-	$type_report = $report_check;
-  }
-  
-  $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014") ||
+  $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ||
                   ($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) ? $type_report : "standard";
   $rule_filter = $report_view['type'];
   
-  if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) {
+  if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) {
     $begin_date = $report_view['date_begin'];
     $labs_manual = $report_view['labs_manual'];
   }
@@ -67,17 +60,10 @@ else {
   // to simplify for when submitting for a new report.
   $type_report = (isset($_GET['type'])) ? trim($_GET['type']) : "standard";
   
-  //AMC 2014 set dividing into 2 stages Check
-  $report_check = "amc_2014";
-  if (strpos($type_report, $report_check) !== false) {
-	$stage_report = str_replace($report_check."_", "", $type_report);  
-	$type_report = $report_check;
-  }
-  
   if ( ($type_report == "cqm_2011") || ($type_report == "cqm_2014") ) {
     $type_report = "cqm";
   }
-  if ( ($type_report == "amc_2011") || ($type_report == "amc_2014") ) {
+  if ( ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ) {
     $type_report = "amc";
   }
   // Collect form parameters (set defaults if empty)
@@ -121,20 +107,12 @@ else {
 <?php if ($type_report == "amc_2011") { ?>
   <title><?php echo xlt('Automated Measure Calculations (AMC) - 2011'); ?></title>
 <?php } ?>
-<?php if ($type_report == "amc_2014") { ?>
-	<?php 
-	$stageDisplay = "";
-	if($stage_report != ""){
-		if($stage_report == "stage1"){
-			$stageDisplay = xlt('Stage I');
-		}else if($stage_report == "stage2"){
-			$stageDisplay = xlt('Stage II');
-		}
-	}
-	?>
-  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014')." ".$stageDisplay; ?></title>
+<?php if ($type_report == "amc_2014_stage1") { ?>
+  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage I"; ?></title>
 <?php } ?>
-
+<?php if ($type_report == "amc_2014_stage2") { ?>
+  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage II"; ?></title>
+<?php } ?>
 
 <script type="text/javascript" src="../../library/overlib_mini.js"></script>
 <script type="text/javascript" src="../../library/textformat.js"></script>
@@ -261,13 +239,13 @@ else {
  }
  
  function Form_Validate() {
-	 <?php if ( (empty($report_id)) && (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) ){ ?>	
+	 <?php if ( (empty($report_id)) && (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) ){ ?>	
 		 var d = document.forms[0];		 
 		 FromDate = d.form_begin_date.value;
 		 ToDate = d.form_target_date.value;
 		  if ( (FromDate.length > 0) && (ToDate.length > 0) ) {
 			 if (FromDate > ToDate){
-				  alert("<?php xl('End date must be later than Begin date!','e'); ?>");
+				  alert("<?php xls('End date must be later than Begin date!','e'); ?>");
 				  return false;
 			 }
 		 }
@@ -342,14 +320,15 @@ else {
 <?php if ($type_report == "amc_2011") { ?>
   <?php echo xlt('Automated Measure Calculations (AMC) - 2011'); ?>
 <?php } ?>
-<?php if ($type_report == "amc_2014") { ?>
-  <?php echo xlt('Automated Measure Calculations (AMC) - 2014')." ".$stageDisplay; ?>
+<?php if ($type_report == "amc_2014_stage1") { ?>
+  <?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage I"; ?>
+<?php } ?>
+<?php if ($type_report == "amc_2014_stage2") { ?>
+  <?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage II"; ?>
 <?php } ?>
 
 <?php if (!empty($report_id)) { ?>
   <?php echo " - " . xlt('Date of Report') . ": " . text($date_report);
-        //prepare to disable form elements
-        //$dis_text = " disabled='disabled' ";
   ?>
 <?php } ?>
 <?php
@@ -374,7 +353,7 @@ else {
 
 	<table class='text'>
 
-		<?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) { ?>
+		<?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) { ?>
                    <tr>
                       <td class='label'>
                          <?php echo htmlspecialchars( xl('Begin Date'), ENT_NOQUOTES); ?>:
@@ -393,7 +372,7 @@ else {
 
                 <tr>
                         <td class='label'>
-                           <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) { ?>
+                           <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) { ?>
                               <?php echo htmlspecialchars( xl('End Date'), ENT_NOQUOTES); ?>:
                            <?php } else { ?>
                               <?php echo htmlspecialchars( xl('Target Date'), ENT_NOQUOTES); ?>:
@@ -428,7 +407,7 @@ else {
                     </tr>
                 <?php } ?>
 
-                <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) { ?>
+                <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) { ?>
                     <tr>
                         <td class='label'>
                             <?php echo xlt('Rule Set'); ?>:
@@ -468,7 +447,7 @@ else {
                     </tr>
                 <?php } ?>
 
-                <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) { ?>
+                <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) { ?>
                     <input type='hidden' id='form_plan_filter' name='form_plan_filter' value=''>
                 <?php } else { ?>
                     <tr>
@@ -554,7 +533,7 @@ else {
                         </td>
                 </tr>
 
-                <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")) { ?>
+                <?php if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) { ?>
                   <tr>
                         <td>
                                <?php echo htmlspecialchars( xl('Number labs'), ENT_NOQUOTES); ?>:<br>
@@ -750,7 +729,7 @@ else {
            $tempCqmAmcString .= " " . htmlspecialchars( xl('AMC-2011') . ":" . $row['amc_code'], ENT_NOQUOTES) . " ";
          }
        }
-       if ($type_report == "amc_2014") {
+       if ( ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ) {
          if (!empty($row['amc_code_2014'])) {
            $tempCqmAmcString .= " " . htmlspecialchars( xl('AMC-2014') . ":" . $row['amc_code_2014'], ENT_NOQUOTES) . " ";
          }
@@ -881,7 +860,7 @@ else {
 <?php include_once("{$GLOBALS['srcdir']}/dynarch_calendar_en.inc.php"); ?>
 <script type="text/javascript" src="../../library/dynarch_calendar_setup.js"></script>
 <script language="Javascript">
- <?php if ($type_report == "amc" || $type_report == "amc_2014") { ?>
+ <?php if ($type_report == "amc" || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ) { ?>
   Calendar.setup({inputField:"form_begin_date", ifFormat:"%Y-%m-%d %H:%M:%S", button:"img_begin_date", showsTime:'true'});
  <?php } ?>
  Calendar.setup({inputField:"form_target_date", ifFormat:"%Y-%m-%d %H:%M:%S", button:"img_target_date", showsTime:'true'});

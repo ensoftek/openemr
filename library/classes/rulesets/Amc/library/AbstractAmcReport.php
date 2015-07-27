@@ -247,7 +247,7 @@ abstract class AbstractAmcReport implements RsReportIF
 				array_push($sqlBindArray, $patient->id, $begin, $end);
                 break;
 			
-			case "lab_orders":
+			case "cpoe_lab_orders":
 				$sql = "SELECT IF( u.cpoe = '1', 'Yes', 'No') as cpoe_stat FROM procedure_order pr ".
 					  "INNER JOIN procedure_order_code prc ON pr.procedure_order_id = prc.procedure_order_id ".
 					  "LEFT JOIN procedure_providers pp ON pr.lab_id = pp.ppid ".
@@ -275,7 +275,7 @@ abstract class AbstractAmcReport implements RsReportIF
                 array_push($sqlBindArray, $patient->id, $begin, $end);
                 break;
 				
-			case "laborders":
+			case "lab_orders":
                $sql = "SELECT procedure_order_id FROM " .
                        "procedure_order " .
                        "WHERE " .
@@ -290,6 +290,16 @@ abstract class AbstractAmcReport implements RsReportIF
                        "WHERE controlledsubstance = 'no' " .
 					   "AND `patient_id` = ? ".
                        "AND `date_added` BETWEEN ? AND ?";
+                array_push($sqlBindArray, $patient->id, $begin, $end);
+                break;
+			
+			case "encounters_office_vist":
+                $sql = "SELECT * " .
+                       "FROM `form_encounter` fe " .
+					   "INNER JOIN openemr_postcalendar_categories opc ON fe.pc_catid = opc.pc_catid ".
+                       "WHERE opc.pc_catname = 'Office Visit' ".
+					   "AND`pid` = ? " .
+                       "AND `date` >= ? AND `date` <= ?";
                 array_push($sqlBindArray, $patient->id, $begin, $end);
                 break;
         }

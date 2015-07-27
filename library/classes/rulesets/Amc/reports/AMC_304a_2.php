@@ -17,7 +17,7 @@ class AMC_304a_2 extends AbstractAmcReport
 
     public function getObjectToCount()
     {
-        return "lab_orders";
+        return "cpoe_lab_orders";
     }
  
     public function createDenominator() 

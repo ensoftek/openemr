@@ -63,6 +63,7 @@ function QuotedOrNull($fld) {
 
 function getListOptions($list_id , $fieldnames=array('option_id', 'title', 'seq'))
 {
+	$output =  array();
 	$query = sqlStatement("SELECT ".implode(',',$fieldnames)." FROM list_options where list_id='".$list_id."' order by seq");
 	while($ll = sqlFetchArray($query)) {
 		foreach($fieldnames as $val)
@@ -297,7 +298,7 @@ function addProcLine() {
  var cell = row.insertCell(0);
  cell.vAlign = 'top';
  //cell.innerHTML = "<b><?php echo xl('Procedure'); ?> " + (i + 1) + ":</b>";
- cell.innerHTML = "<b>"+prc_name+"<input type='hidden' style='border:none;font-weight: bold;' readonly='' name='form_proc_order_title[" + i + "]' value='"+ prc_name +"'></b>";
+ cell.innerHTML = "<b>"+prc_name+"<input type='hidden' name='form_proc_order_title[" + i + "]' value='"+ prc_name +"'></b>";
  var cell = row.insertCell(1);
  cell.vAlign = 'top';
  cell.innerHTML =
@@ -525,10 +526,10 @@ generate_form_field(array('data_type'=>1,'field_id'=>'order_status',
  <tr>
  <!--<td width='1%' valign='top'><b><?php echo xl('Procedure') . ' ' . ($i + 1); ?>:</b></td>-->
  <?php if(empty($formid) || empty($oprow['procedure_order_title'])) {?> 
-        <td width='1%' valign='top'><input type='hidden' style='border:none;font-weight: bold;' readonly='' name='form_proc_order_title[<?php echo $i; ?>]' value='Procedure'><b><?php echo xl('Procedure');?></b></td>
+        <td width='1%' valign='top'><input type='hidden' name='form_proc_order_title[<?php echo $i; ?>]' value='Procedure'><b><?php echo xl('Procedure');?></b></td>
     <?php } else {?>
      <td width='1%' valign='top'>
-        <input type='hidden' style='width:200px;border:none;font-weight: bold;' readonly='' name='form_proc_order_title[<?php echo $i; ?>]' value='<?php echo attr($oprow['procedure_order_title']) ?>'><b><?php echo attr($oprow['procedure_order_title']) ?></b>
+        <input type='hidden' name='form_proc_order_title[<?php echo $i; ?>]' value='<?php echo attr($oprow['procedure_order_title']) ?>'><b><?php echo attr($oprow['procedure_order_title']) ?></b>
      </td>
     <?php } ?>
   <td valign='top'>
@@ -567,7 +568,7 @@ if ($qoe_init_javascript)
 <?php $procedure_order_type = getListOptions('order_type' , array('option_id', 'title')); ?>
 <select name="procedure_type_names" id="procedure_type_names">
 	<?php foreach($procedure_order_type as $ordered_types){?>
-	<option value="<?php echo $ordered_types['title']; ?>" ><?php echo $ordered_types['title'] ; ?></option>
+	<option value="<?php echo xls($ordered_types['title']); ?>" ><?php echo xls($ordered_types['title']) ; ?></option>
 	<?php } ?>    
 </select> 
 <input type='button' value='<?php echo xla('Add Procedure'); ?>' onclick="addProcLine()" />

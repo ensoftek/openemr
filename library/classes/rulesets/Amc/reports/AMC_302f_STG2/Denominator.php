@@ -1,9 +1,10 @@
 <?php
-// Copyright (c) 2015 Ensoftek, Inc
+// Copyright (C) 2015 Ensoftek Inc
 //
-// This program is protected by copyright laws; you may not redistribute it and/or
-// modify it in part or whole for any purpose without prior express written permission 
-// from EnSoftek, Inc.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 
 class AMC_302f_STG2_Denominator implements AmcFilterIF
 {
