@@ -181,14 +181,14 @@ function rhl7DecodeData($enctype, &$src) {
  * @param  string  $specimen  Encoding type from SPM.
  * @param  int  &procedure_report_id   ID from the procedure_report table.
  */
-function rhl7UpdateReportWithSpecimen($specimen, $procedure_report_id) {
+function rhl7UpdateReportWithSpecimen($specimen, $procedure_report_id, $componentdelimiter) {
   $specimen_display = null;
   $specimen_condition =  null;
   $specimen_reject_reason = null;
 
   // SPM4: Specimen Type: Example: 119297000^BLD^SCT^BldSpc^Blood^99USA^^^Blood Specimen
-  $spm4_segs = explode("^", $specimen[4]);
-  if ( isset($spm4_segs[8]) && !empty($spm4_segs[8]) )
+  $spm4_segs = explode($componentdelimiter, $specimen[4]);
+  if ( !empty($spm4_segs[8]) )
   {
 	   $specimen_display = $spm4_segs[8];
   }
@@ -212,17 +212,17 @@ function rhl7UpdateReportWithSpecimen($specimen, $procedure_report_id) {
  * @param  string  $obx23  Encoding type from OBX25.
  * @param  string  $obx23  New line character.
  */
-function getPerformingOrganizationDetails($obx23, $obx24, $obx25, $commentdelim) {
+function getPerformingOrganizationDetails($obx23, $obx24, $obx25, $componentdelimiter, $commentdelim) {
   $s = null;
 
 
-  if ( (isset($obx24) && !empty($obx24)) || (isset($obx24) && !empty($obx24)) || (isset($obx25) && !empty($obx25)) )
+  if ( !empty($obx24) || !empty($obx24) || !empty($obx25) )
   {  
 
       // Organization Name
       // OBX23 Example: "Century Hospital^^^^^NIST-AA-1&2.16.840.1.113883.3.72.5.30.1&ISO^XX^^^987"
-      $obx23_segs = explode("^", $obx23);
-	  if ( isset($obx23_segs[0]) && !empty($obx23_segs[0]) )
+      $obx23_segs = explode($componentdelimiter, $obx23);
+	  if ( !empty($obx23_segs[0]) )
 	  {
 		  $s .= $obx23_segs[0] . $commentdelim;
 	  }
@@ -230,9 +230,9 @@ function getPerformingOrganizationDetails($obx23, $obx24, $obx25, $commentdelim)
        // Medical Director
   	  // OBX25 Example: "2343242^Knowsalot^Phil^J.^III^Dr.^^^NIST-AA-1&2.16.840.1.113883.3.72.5.30.1&ISO^L^^^DNSPM"
       //             Dr. Phil Knowsalot J. III
-	  if ( isset($obx25) && !empty($obx25) )
+	  if ( !empty($obx25) )
 	  {
-		  $obx25_segs = explode("^", $obx25);
+		  $obx25_segs = explode($componentdelimiter, $obx25);
 
 		  $s .= "$obx25_segs[5] $obx25_segs[2] $obx25_segs[1] $obx25_segs[3] $obx25_segs[4]" . $commentdelim;
 	  }
@@ -240,13 +240,13 @@ function getPerformingOrganizationDetails($obx23, $obx24, $obx25, $commentdelim)
 	  
       // Organization Address
 	  // OBX24 Example: "2070 Test Park^^Los Angeles^CA^90067^USA^B^^06037"
-	  if ( isset($obx24) && !empty($obx24) )
+	  if ( !empty($obx24) )
 	  {
-		  $obx24_segs = explode("^", $obx24);
+		  $obx24_segs = explode($componentdelimiter, $obx24);
 
 		  //$s .= "$obx24_segs[0] $obx24_segs[1], $obx24_segs[2], $obx24_segs[3], $obx24_segs[4], $obx24_segs[5]" . $commentdelim;
 		  $s .= "$obx24_segs[0]$commentdelim$obx24_segs[2], $obx24_segs[3] $obx24_segs[4]$commentdelim$obx24_segs[5]$commentdelim";
-		  if ( isset($obx24_segs[8]) && !empty($obx24_segs[8]) )
+		  if ( !empty($obx24_segs[8]) )
 		  {
 		    $s .= "County/Parish Code: $obx24_segs[8]$commentdelim";
 		  }
@@ -792,14 +792,14 @@ function receive_hl7_results(&$hl7, &$matchreq, $lab_id=0, $direction='B', $dryr
       $ares['date'] = rhl7DateTime($a[14]);
       $ares['facility'] = rhl7Text($a[15]);
  	  // Ensoftek: Units may have mutiple segments(as seen in MU2 samples), parse and take just first segment.
-	  $tmp = explode("^", $a[6]);
+	  $tmp = explode($d2, $a[6]);
 	  $ares['units'] = rhl7Text($tmp[0]);
       $ares['range'] = rhl7Text($a[7]);
       $ares['abnormal'] = rhl7Abnormal($a[8]); // values are lab dependent
       $ares['result_status'] = rhl7ReportStatus($a[11]);
 	  
 	  // Ensoftek: Performing Organization Details. Goes into "Pending Review/Patient Results--->Notes--->Facility" section.
-	  $performingOrganization = getPerformingOrganizationDetails($a[23], $a[24], $a[25], $commentdelim);
+	  $performingOrganization = getPerformingOrganizationDetails($a[23], $a[24], $a[25], $d2, $commentdelim);
 	  if ( isset($performingOrganization) )
 	  {
 		     $ares['facility'] .= $performingOrganization . $commentdelim;		
@@ -850,8 +850,15 @@ function receive_hl7_results(&$hl7, &$matchreq, $lab_id=0, $direction='B', $dryr
     }
 	
     // Ensoftek: Get data from SPM segment for specimen.
-    else if ('SPM' == $a[0] && 'ORU' == $msgtype) {
-	  rhl7UpdateReportWithSpecimen($a, $procedure_report_id);
+	// SPM segment always occurs after the OBX segment.
+    else if ('SPM' == $a[0] && 'ORU' == $msgtype) {	
+      if (!$dryrun) rhl7FlushResult($ares);
+      $ares = array();
+      if (!$procedure_report_id) {
+        if (!$dryrun) $procedure_report_id = rhl7FlushReport($arep);
+        $arep = array();
+      }	
+	  rhl7UpdateReportWithSpecimen($a, $procedure_report_id, $d2);
     }
 	
     // Add code here for any other segment types that may be present.

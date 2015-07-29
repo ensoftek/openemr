@@ -155,3 +155,13 @@ INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_boa
 INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '2', 'Room 2', 20);
 INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '3', 'Room 3', 30);
 #EndIf
+
+-- Begin: Changes by Ensoftek for the MU2 Lab Results( 170.314(b)(5)(A) )
+#IfNotRow2D list_options list_id proc_res_abnormal option_id vhigh
+    INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('proc_res_abnormal', 'vhigh', 'Above upper panic limits', 50);
+#EndIf
+
+#IfNotRow2D list_options list_id proc_res_abnormal option_id vlow
+    INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('proc_res_abnormal', 'vlow', 'Below lower panic limits', 60);
+#EndIf
+-- End: Changes by Ensoftek for the MU2 Lab Results( 170.314(b)(5)(A) )
