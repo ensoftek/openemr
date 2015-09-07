@@ -53,6 +53,15 @@
 	    font-style: italic;
 	}
 	
+	.timeDisplay {
+		position: absolute;
+		margin-left: 500px;
+		text-align: right;
+		color: black;
+		top: -40px;
+		font-style: italic;
+	}
+	
 	#wrapper {
 	    width: 400px;
 	    background-color: white;

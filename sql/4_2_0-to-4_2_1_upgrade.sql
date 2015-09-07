@@ -155,3 +155,36 @@ INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_boa
 INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '2', 'Room 2', 20);
 INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_board_rooms', '3', 'Room 3', 30);
 #EndIf
+
+-- Begin: Changes by Ensoftek for MU2 Secure Messaging( 170.314(e)(3) )
+#IfNotTable secure_messages
+	CREATE TABLE IF NOT EXISTS `secure_messages` (
+		`message_id`	int(11)			NOT NULL AUTO_INCREMENT COMMENT 'Message ID',
+		`from_id`		int(11)			NOT NULL	COMMENT 'pid/user id/authorized user',
+		`from_type`		tinyint(1)		NOT NULL	COMMENT '1-user id,2-pid,3-authorized user',
+		`subject`		varchar(125)	NULL		COMMENT 'message subject',
+		`body`			blob			NOT NULL	COMMENT 'message body',
+		`message_hash`	varchar(50)		NOT NULL	COMMENT 'message hash',
+		`tags`			varchar(255)	NULL,
+		`archive`		tinyint(1)		NOT NULL DEFAULT '0'	COMMENT '1- archive,0-not archive',		
+		`message_time`	timestamp		NOT NULL DEFAULT '0000-00-00 00:00:00'	COMMENT 'created time',
+		PRIMARY KEY secure_messages_id(`message_id`),
+		KEY secure_from_subject(`from_id`,`subject`),
+		KEY secure_from_created_time(`from_id`,`message_time`)
+	) ENGINE = MyISAM;
+#EndIf
+
+#IfNotTable secure_message_details
+	CREATE TABLE IF NOT EXISTS `secure_message_details` (
+		`message_details_id`	int(11)	NOT NULL AUTO_INCREMENT COMMENT 'ID',
+		`message_id`	int(11)			NOT NULL 	COMMENT 'Message ID',
+		`to_id`			int(11)			NOT NULL	COMMENT 'pid/user id/authorized user',
+		`to_type`		tinyint(1)		NOT NULL	COMMENT '1-user id,2-pid,3-authorized user',
+		`is_read`		tinyint(1)		NOT NULL DEFAULT '0'	COMMENT '1-read,0-unread',
+		`deleted`		tinyint(1)		NOT NULL DEFAULT '0'	COMMENT '0-active,1-delete',
+		`modified_time`	timestamp		NULL		COMMENT 'modified time',
+		PRIMARY KEY secure_messages_details_id(`message_details_id`),
+		KEY secure_to(`message_id`,`to_id`)
+	) ENGINE = MyISAM;
+#EndIf
+-- End: Changes by Ensoftek for MU2 Secure Messaging( 170.314(e)(3) )

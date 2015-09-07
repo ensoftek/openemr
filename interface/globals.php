@@ -348,8 +348,10 @@ $GLOBALS['include_de_identification']=0;
 // don't include the authentication module - we do this to avoid
 // include loops.
 
-if (!isset($ignoreAuth) || !$ignoreAuth) {
-  include_once("$srcdir/auth.inc");
+if($_SESSION['patient_portal']) {
+	// No validation required if logged from patient portal
+} else if (!isset($ignoreAuth) || !$ignoreAuth) {
+	  include_once("$srcdir/auth.inc");
 }
 
 // If you do not want your accounting system to have a customer added to it

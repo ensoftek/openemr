@@ -16,18 +16,31 @@
 // (note this is already completed by the script that includes this
 //    get_patient_info.php )
 
+// Aug 2015: Ensoftek: Edited for MUII 170.314(e)(3)
+
 //continue session
 session_start();
 
 //landing page definition -- where to go if something goes wrong
 $landingpage = "index.php?site=".$_SESSION['site_id'];
 //
+require_once("$srcdir/patient.inc");
 
+$pid = null;
 // kick out if patient not authenticated
-if ( isset($_SESSION['pid']) && isset($_SESSION['patient_portal_onsite']) ) {
-  $pid = $_SESSION['pid'];
-}
-else {
+//Aug 2015: Ensoftek: Changed to accomodate the authorized representative portal login
+if ( isset($_SESSION['patient_portal_onsite']) && isset($_SESSION['authRep'])) {
+	$userType = 3;
+	$rs = sqlQuery("SELECT id,contact_name FROM patient_contact_portal_data WHERE id = " . $_SESSION['authRep']);
+	$name = $rs['contact_name'];
+	$userID = $rs['id'];
+	$pid = $_SESSION['authRepPid'];
+} else if ( isset($_SESSION['patient_portal_onsite']) && isset($_SESSION['pid'] ) ) {
+	$pid = $_SESSION['pid'];
+	$userID = $pid;
+	$userType = 2;
+	$name = getPatientName($pid);
+} else {
   session_destroy();
   header('Location: '.$landingpage.'&w');
   exit;
@@ -48,6 +61,8 @@ global $ignoreAuth;
  require_once("$srcdir/formatting.inc.php");
  require_once("$srcdir/edi.inc");
  include_once("$srcdir/lists.inc");
+ 
+ $secureMessageURL = "../interface/main/secure_messages/get_messages.php?application=p_portal&site=".$_SESSION['site_id']."&userID=".$userID."&userType=".$userType;
 
 ?>
 <html>
@@ -366,19 +381,48 @@ $(document).ready(function(){
 
 });
 
-</script>
+function openSecureMessages() {
+	var sLink = '<?php echo $secureMessageURL; ?>';
+	var fbox = document.getElementById("largeFancyBox");
+	fbox.href = sLink,'_blank';
+	$('#largeFancyBox').trigger('click');
+	return false;
+}
 
+//Aug 2015: Ensoftek: Changed to display the time in patient portal
+function display_time() {
+	var curDate = new Date();
+	var curUTC = new Date();
+	var months = ["Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"];
+	curUTC.setTime(curDate.getTime()+ (curDate.getTimezoneOffset() * 60000));
+	var displayFormat = months[curUTC.getMonth()] + " " + curUTC.getDate() + " " + curUTC.getFullYear() + " - " +  ("0" + curUTC.getHours()).slice(-2) + ":" +  ("0" + curUTC.getMinutes()).slice(-2) + ":" +  ("0" + curUTC.getSeconds()).slice(-2); 
+	document.getElementById('ct').innerHTML = displayFormat;
+	tt = display_c();
+}
+
+function display_c(){
+	var refresh = 1000; // Refresh rate in milli seconds
+	mytime = setTimeout('display_time()',refresh);
+}
+
+</script>
 </head>
 
-<body class="body_top">
+<!-- Aug 2015: Ensoftek: Changed to display the time in patient portal -->
+<body class="body_top" onload="display_time();">
 
 <div id="wrapper" class="lefttop" style="width: 700px;">
 <h2 class="heading"><?php echo htmlspecialchars( xl('Patient Portal'), ENT_NOQUOTES); ?></h2>
-
+<!-- Aug 2015: Ensoftek: Changed to display the time in patient portal -->
+<h4 class="timeDisplay"><span id='ct' width="100%" align="right"></span></h4>
 <?php
  $result = getPatientData($pid);
 ?>
-<?php echo htmlspecialchars( xl('Welcome'), ENT_NOQUOTES); ?> <b><?php echo htmlspecialchars($result['fname']." ".$result['lname'],ENT_NOQUOTES); ?></b>
+<?php echo htmlspecialchars( xl('Welcome'), ENT_NOQUOTES); ?> <b><?php echo $name; ?></b>
+<a href='#'><img onclick='javascript:openSecureMessages();' src="../images/messages.png"></a>
+<div style="display:none">
+  <a id="largeFancyBox" class="iframe large_modal"></a>
+</div>
 
 <div style='margin-top:10px'> <!-- start main content div -->
  <table border="0" cellspacing="0" cellpadding="0" width="100%">

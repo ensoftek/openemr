@@ -150,7 +150,9 @@ use ESign\Api;
   'ere' => array(xl('e-Rx EPCS') , 1, 'eRx.php?page=epcs-admin'),
   'pay' => array(xl('Payment') , 1, '../patient_file/front_payment.php'),
   'edi' => array(xl('EDI History') , 0, 'billing/edih_view.php'),
-  'dld' => array(xl('Display Documents'), 0, 'main/display_documents.php')
+  'dld' => array(xl('Display Documents'), 0, 'main/display_documents.php'),
+  'sci' => array(xl('Inbox'),0,'main/secure_messages/messages.php?page_request=inbox'),
+  'scs' => array(xl('Sent Items'),0,'main/secure_messages/messages.php?page_request=sent_items'),
  );
  $primary_docs['npa']=array(xl('Batch Payments')   , 0, 'billing/new_payment.php');
  if ($GLOBALS['use_charges_panel'] || $GLOBALS['concurrent_layout'] == 2) {
@@ -1264,7 +1266,13 @@ if ($GLOBALS['athletic_team']) {
 <?php } else { // not athletic team ?>
   <?php if (!$GLOBALS['disable_calendar'] && !$GLOBALS['ippf_specific']) genTreeLink('RTop','cal',xl('Calendar')); ?>
   <?php if (!$GLOBALS['disable_pat_trkr'] && !$GLOBALS['disable_calendar']) genTreeLink('RTop','pfb',xl('Flow Board')); ?>
-  <?php genTreeLink('RBot','msg',xl('Messages')); ?> 
+  <?php genTreeLink('RBot','msg',xl('Messages')); ?>
+  <li class="open"><a class="expanded" id="patMessages"><?php echo xlt('Secure Messages') ?></span></a>
+	  <ul>
+		  <?php genTreeLink('RBot','sci',xl('Inbox')); ?>
+		  <?php genTreeLink('RBot','scs',xl('Sent Items')); ?>
+	  </ul>
+  </li>
   <?php if ($GLOBALS['lab_exchange_enable']) genTreeLink('RTop', 'lab', xl('Check Lab Results'));?>
   <?php if($GLOBALS['portal_offsite_enable'] && $GLOBALS['portal_offsite_address'] && acl_check('patientportal','portal'))  genTreeLink('RTop','app',xl('Portal Activity')); ?>
   <?php
