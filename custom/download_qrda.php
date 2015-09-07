@@ -199,7 +199,7 @@ $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($typ
 					$tempCqmAmcString = "";
 					if (($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) {
 					  if (!empty($row['cqm_pqri_code'])) {
-						$tempCqmAmcString .= " " . text( xl('PQRI') . ":" . $row['cqm_pqri_code']) . " ";
+						$tempCqmAmcString .= " " .  xl('PQRI') . ":" . $row['cqm_pqri_code'] . " ";
 					  }
 					  if (!empty($row['cqm_nqf_code'])) {
 						$tempCqmAmcString .= " " .  xl('NQF') . ":" . $row['cqm_nqf_code'] . " ";
