@@ -39,11 +39,11 @@ if (!empty($report_id)) {
   $date_report = $report_view['date_report'];
   $type_report = $report_view['type'];
   
-  $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ||
+  $type_report = (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")  || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ||
                   ($type_report == "cqm") || ($type_report == "cqm_2011") || ($type_report == "cqm_2014")) ? $type_report : "standard";
   $rule_filter = $report_view['type'];
   
-  if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) {
+  if (($type_report == "amc") || ($type_report == "amc_2011") || ($type_report == "amc_2014")  || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2")) {
     $begin_date = $report_view['date_begin'];
     $labs_manual = $report_view['labs_manual'];
   }
@@ -63,7 +63,7 @@ else {
   if ( ($type_report == "cqm_2011") || ($type_report == "cqm_2014") ) {
     $type_report = "cqm";
   }
-  if ( ($type_report == "amc_2011") || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ) {
+  if ( ($type_report == "amc_2011") || ($type_report == "amc_2014")  || ($type_report == "amc_2014_stage1") || ($type_report == "amc_2014_stage2") ) {
     $type_report = "amc";
   }
   // Collect form parameters (set defaults if empty)
@@ -108,10 +108,10 @@ else {
   <title><?php echo xlt('Automated Measure Calculations (AMC) - 2011'); ?></title>
 <?php } ?>
 <?php if ($type_report == "amc_2014_stage1") { ?>
-  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage I"; ?></title>
+  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014 Stage I'); ?></title>
 <?php } ?>
 <?php if ($type_report == "amc_2014_stage2") { ?>
-  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage II"; ?></title>
+  <title><?php echo xlt('Automated Measure Calculations (AMC) - 2014 Stage II'); ?></title>
 <?php } ?>
 
 <script type="text/javascript" src="../../library/overlib_mini.js"></script>
@@ -245,7 +245,7 @@ else {
 		 ToDate = d.form_target_date.value;
 		  if ( (FromDate.length > 0) && (ToDate.length > 0) ) {
 			 if (FromDate > ToDate){
-				  alert("<?php xls('End date must be later than Begin date!','e'); ?>");
+				  alert("<?php echo xls('End date must be later than Begin date!'); ?>");
 				  return false;
 			 }
 		 }
@@ -321,10 +321,10 @@ else {
   <?php echo xlt('Automated Measure Calculations (AMC) - 2011'); ?>
 <?php } ?>
 <?php if ($type_report == "amc_2014_stage1") { ?>
-  <?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage I"; ?>
+  <?php echo xlt('Automated Measure Calculations (AMC) - 2014 Stage I'); ?>
 <?php } ?>
 <?php if ($type_report == "amc_2014_stage2") { ?>
-  <?php echo xlt('Automated Measure Calculations (AMC) - 2014')." Stage II"; ?>
+  <?php echo xlt('Automated Measure Calculations (AMC) - 2014 Stage II'); ?>
 <?php } ?>
 
 <?php if (!empty($report_id)) { ?>
