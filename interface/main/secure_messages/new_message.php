@@ -26,10 +26,7 @@ $sanitize_all_escapes=true;
 //STOP FAKE REGISTER GLOBALS
 $fake_register_globals=false;
 
-if ( $_SESSION['patient_portal'] ) {
-	$ignoreAuth=true;
-}
-
+include_once("../../../patients/verify_user.php");
 require_once('../../globals.php');
 require_once("$srcdir/formatting.inc.php");
 require_once("$srcdir/options.inc.php");

@@ -1,7 +1,12 @@
 <?php
+
 /**
  *
- * Secure Message page in patient portal
+ * Verify User Page. 
+ * Should be included all the files which are used in patient portal and also in EHR.
+ * The main purpose of this file is to make $ignoreAuth as true
+ * Should be called included before globals.php
+ * 
  * Copyright (C) 2015 Ensoftek, Inc
  *
  * LICENSE: This program is free software; you can redistribute it and/or
@@ -18,42 +23,25 @@
  * @package OpenEMR
  * @author  Ensoftek
  * @link    http://www.open-emr.org
- */ 
+ */
 
 //SANITIZE ALL ESCAPES
 $sanitize_all_escapes=true;
-//
 
 //STOP FAKE REGISTER GLOBALS
 $fake_register_globals=false;
-//
 
-$ignoreAuth=true;
-require_once("../../globals.php");
+//continue session
+session_start();
 
-$site = $_SESSION['site_id'];
-if($_GET['application'] == 'p_portal') {
+// check if accessed from patient portal and session is set.
+// pid and auth rep are not validated here. Assuming it is already validated
+if ( ( isset($_SESSION['pid']) || isset($_SESSION['authRep']) ) && isset($_SESSION['patient_portal_onsite']) ) {
+	$pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : $_SESSION['authRepPid'];
 	$_SESSION['patient_portal'] = true;
+	$ignoreAuth=true;
+} else {
+	session_destroy(); // destroy the session if not from patient portal
 }
 
-$userID = $_GET['userID'];
-$userType = $_GET['userType'];
 ?>
-<html>
-
-<head>
-<title><?php echo htmlspecialchars( xl('Patient Portal Summary'), ENT_NOQUOTES); ?></title>
-<link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-
-
-<style>
-</style>
-
-</head>
-
- <frameset cols="15%,*" id="secMessage_frame"  class='bgcolor2' style='border:2px red solid;'>
-    <frame src="<?php echo $GLOBALS['web_root']; ?>/patients/message_links.php" name="FormLeft" scrolling="auto" >
-    <frame src="<?php echo $GLOBALS['web_root']; ?>/interface/main/secure_messages/messages.php?page_request=inbox&userID=<?php echo $userID; ?>&userType=<?php echo $userType;?>"  name="FormRight" scrolling="auto" >   
-</frameset>
-
-</html>
