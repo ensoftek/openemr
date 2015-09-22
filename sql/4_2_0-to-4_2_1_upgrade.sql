@@ -164,4 +164,8 @@ INSERT INTO list_options (list_id,option_id,title,seq) VALUES ('patient_flow_boa
 #IfNotRow2D list_options list_id proc_res_abnormal option_id vlow
     INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('proc_res_abnormal', 'vlow', 'Below lower panic limits', 60);
 #EndIf
+
+#IfMissingColumn procedure_result pid
+	ALTER TABLE  `procedure_result` ADD  `pid` bigint(20)   NOT NULL default '0';
+#EndIf
 -- End: Changes by Ensoftek for the MU2 Lab Results( 170.314(b)(5)(A) )

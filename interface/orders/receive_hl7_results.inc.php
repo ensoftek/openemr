@@ -543,6 +543,11 @@ function receive_hl7_results(&$hl7, &$matchreq, $lab_id=0, $direction='B', $dryr
           $patient_id = create_skeleton_patient($ptarr);
         }
         if ($patient_id == -1) $patient_id = 0;
+		
+		// Ensoftek:        For MU2 item A8, we need to create a Rule that uses 'Custom Table'. This rule will
+		//                  be executed on the table procedure_result. But, the Rule expects the Custom Table to
+		//                  have a 'pid' column. 
+		$ares['pid'] = $patient_id;
       } // end results-only/MDM logic
     }
 
